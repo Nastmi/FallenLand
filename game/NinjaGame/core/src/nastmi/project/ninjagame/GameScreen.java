@@ -33,19 +33,23 @@ public class GameScreen implements Screen, InputProcessor {
 
 
     public GameScreen(final MainGame game){
-        world = new World(new Vector2(0, -10),true);
         this.game=game;
+        //Create camera, and link it to a viewport, so sizes of textures scale properly.
         camera = new OrthographicCamera();
         viewport = new FitViewport(16,9,camera);
         viewport.apply();
         camera.position.set(viewport.getWorldWidth()/2+10.6f ,viewport.getWorldHeight()/2,0);
         Gdx.input.setInputProcessor(this);
+        //Load and render map
         map = new TmxMapLoader().load("tiledMaps/maps/grassland_1_1.tmx");
         renderer = new ObjectLayerRenderer(map,1/48f);
         prop = map.getProperties();
         GAME_WORLD_WIDTH = prop.get("width",Integer.class);
         GAME_WORLD_HEIGHT = prop.get("height",Integer.class);
+        //Create a world and build it's collisions.
+        world = new World(new Vector2(0, -10),true);
         CollisionBuilder.objectLayerToBox2D(map,world,1/48f);
+        //Test body below.
         bodyDef = new BodyDef();
         bodyDef.type = BodyType.DynamicBody;
         bodyDef.position.set(camera.position.x,camera.position.y);

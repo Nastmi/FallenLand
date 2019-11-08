@@ -5,8 +5,8 @@ import com.badlogic.gdx.maps.objects.PolygonMapObject;
 import com.badlogic.gdx.maps.objects.TextureMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
-/*The default renderers have a renderObject method, but it is empty. As such, we simply extend OrthogonalTiledMapRenderer and fill the method.
-this draw every layer, including object layers*/
+/*The default renderers has a renderObject method, but it is empty. As such, we simply extend OrthogonalTiledMapRenderer and fill the method.
+This draws every layer, including object layers. While i might not even end up using objects to draw textures, this is used for security i guess.*/
 public class ObjectLayerRenderer extends OrthogonalTiledMapRenderer {
     public ObjectLayerRenderer(TiledMap map) {
         super(map);
