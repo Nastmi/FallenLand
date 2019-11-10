@@ -2,6 +2,7 @@ package nastmi.project.ninjagame;
 
 import com.badlogic.gdx.*;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
@@ -10,6 +11,7 @@ import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.physics.box2d.BodyDef.*;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import nastmi.project.Entities.Player;
 import nastmi.project.utilities.CollisionBuilder;
 import nastmi.project.utilities.ObjectLayerRenderer;
 
@@ -30,6 +32,7 @@ public class GameScreen implements Screen, InputProcessor {
     Box2DDebugRenderer debugRenderer = new Box2DDebugRenderer();
     BodyDef bodyDef;
     Body body;
+    Player player;
 
 
     public GameScreen(final MainGame game){
@@ -58,16 +61,18 @@ public class GameScreen implements Screen, InputProcessor {
         poly.setAsBox(0.5f,0.5f);
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = poly;
-        //fixtureDef.density = 0.5f;
-        fixtureDef.friction = 0.4f;
-        fixtureDef.restitution = 1f;
         Fixture fixture = body.createFixture(fixtureDef);
+
 
 
     }
 
     @Override
     public void render(float delta) {
+        if(camera.position.y > 4.5)
+            camera.position.set(body.getPosition(),0.0f);
+        else
+            camera.position.set(body.getPosition().x,4.5f,0.0f);
         camera.update();
         renderer.setView(camera);
         renderer.render();
@@ -75,21 +80,23 @@ public class GameScreen implements Screen, InputProcessor {
         game.batch.setProjectionMatrix(camera.combined);
         game.batch.end();
         if(rightPressed) {
-            if(camera.position.x < GAME_WORLD_WIDTH-8)
-                camera.translate(0.05f, 0);
+            body.applyForceToCenter(5f,0.0f,true);
+           /* if(camera.position.x < GAME_WORLD_WIDTH-8)
+                camera.translate(0.05f, 0);*/
         }
         if(leftPressed) {
-            if(camera.position.x > 8)
-                camera.translate(-0.05f, 0);
+            body.applyForceToCenter(-5f,0.0f,true);
+            /*if(camera.position.x > 8)
+                camera.translate(-0.05f, 0);*/
         }
-        if(upPressed) {
+       /* if(upPressed) {
             if(camera.position.y < GAME_WORLD_HEIGHT-4.5)
                 camera.translate(0, 0.05f);
         }
         if(downPressed) {
             if(camera.position.y > 4.5)
                 camera.translate(0, -0.05f);
-        }
+        }*/
         debugRenderer.render(world, camera.combined);
         world.step(1/60f, 6, 2);
     }
@@ -125,6 +132,9 @@ public class GameScreen implements Screen, InputProcessor {
     public void dispose() {
 
     }
+
+
+
 
     @Override
     public boolean keyDown(int keycode) {
