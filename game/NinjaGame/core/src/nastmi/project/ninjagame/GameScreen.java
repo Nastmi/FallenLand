@@ -2,6 +2,8 @@ package nastmi.project.ninjagame;
 
 import com.badlogic.gdx.*;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.tiled.TiledMap;
@@ -41,7 +43,7 @@ public class GameScreen implements Screen, InputProcessor {
         camera = new OrthographicCamera();
         viewport = new FitViewport(16,9,camera);
         viewport.apply();
-        camera.position.set(viewport.getWorldWidth()/2+10.6f ,viewport.getWorldHeight()/2,0);
+        camera.position.set(viewport.getWorldWidth()/2 ,viewport.getWorldHeight()/2,0);
         Gdx.input.setInputProcessor(this);
         //Load and render map
         map = new TmxMapLoader().load("tiledMaps/maps/grassland_1_1.tmx");
@@ -62,6 +64,8 @@ public class GameScreen implements Screen, InputProcessor {
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = poly;
         Fixture fixture = body.createFixture(fixtureDef);
+        fixtureDef.friction = 0.0f;
+        player = new Player(10,7,new Sprite(new Texture("char.png")),48,48);
 
 
 
@@ -78,28 +82,35 @@ public class GameScreen implements Screen, InputProcessor {
         renderer.render();
         game.batch.begin();
         game.batch.setProjectionMatrix(camera.combined);
+        drawPlayer(player,game.batch,1/48f);
         game.batch.end();
         if(rightPressed) {
-            body.applyForceToCenter(5f,0.0f,true);
+            body.applyLinearImpulse(0.1f,0.0f,body.getPosition().x,body.getPosition().y,true);
            /* if(camera.position.x < GAME_WORLD_WIDTH-8)
                 camera.translate(0.05f, 0);*/
         }
         if(leftPressed) {
-            body.applyForceToCenter(-5f,0.0f,true);
+            body.applyLinearImpulse(-0.1f,0.0f,body.getPosition().x,body.getPosition().y,true);
             /*if(camera.position.x > 8)
                 camera.translate(-0.05f, 0);*/
         }
-       /* if(upPressed) {
-            if(camera.position.y < GAME_WORLD_HEIGHT-4.5)
-                camera.translate(0, 0.05f);
+        if(!rightPressed && !leftPressed){
+            body.setLinearVelocity(0.0f,body.getLinearVelocity().y);
         }
-        if(downPressed) {
+        if(upPressed) {
+            /*if(camera.position.y < GAME_WORLD_HEIGHT-4.5)
+                camera.translate(0, 0.05f);*/
+            body.applyLinearImpulse(0.0f,2f,body.getPosition().x,body.getPosition().y,true);
+        }
+        /*if(downPressed) {
             if(camera.position.y > 4.5)
                 camera.translate(0, -0.05f);
         }*/
+
         debugRenderer.render(world, camera.combined);
         world.step(1/60f, 6, 2);
     }
+
 
     @Override
     public void show() {
@@ -133,7 +144,10 @@ public class GameScreen implements Screen, InputProcessor {
 
     }
 
+    public static void drawPlayer(Player player, Batch batch, float unitScale){
+        batch.draw(player.getSprite().getTexture(),player.getX(),player.getY(),player.getSprite().getTexture().getWidth()*unitScale,player.getSprite().getTexture().getHeight()*unitScale);
 
+    }
 
 
     @Override

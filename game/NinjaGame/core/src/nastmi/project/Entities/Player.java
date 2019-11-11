@@ -8,12 +8,21 @@ public class Player extends Entity{
     int health;
     Sprite sprite;
 
-    public Player(int x,int y, Sprite startSprite){
+    public Player(int x,int y, Sprite startSprite, float width, float height){
         this.x = x;
         this.y = y;
         this.sprite = startSprite;
+        this.height = height;
+        this.width = width;
         this.health = 20;
     }
 
 
+    public int getHealth() {
+        return health;
+    }
+
+    public Sprite getSprite() {
+        return sprite;
+    }
 }

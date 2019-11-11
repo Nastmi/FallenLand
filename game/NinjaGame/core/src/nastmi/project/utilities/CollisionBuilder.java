@@ -25,6 +25,7 @@ public class CollisionBuilder {
                 Body body = world.createBody(bodyDef);
                 PolygonShape shape = new PolygonShape();
                 shape.setAsBox(newObj.getRectangle().width*unitScale,newObj.getRectangle().height*unitScale);
+                FixtureDef fixDef = new FixtureDef();
                 Fixture fixture = body.createFixture(shape,0.0f);
             }
             else if(obj instanceof PolygonMapObject){

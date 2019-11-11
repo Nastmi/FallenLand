@@ -3,5 +3,27 @@ package nastmi.project.Entities;
 public class Entity {
     float x;
     float y;
+    float width;
+    float height;
     float speed;
+
+    public float getX() {
+        return x;
+    }
+
+    public float getY() {
+        return y;
+    }
+
+    public float getWidth() {
+        return width;
+    }
+
+    public float getHeight() {
+        return height;
+    }
+
+    public float getSpeed() {
+        return speed;
+    }
 }
