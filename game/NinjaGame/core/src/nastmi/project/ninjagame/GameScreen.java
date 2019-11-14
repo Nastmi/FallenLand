@@ -15,6 +15,7 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import nastmi.project.Entities.Player;
 import nastmi.project.utilities.CollisionBuilder;
+import nastmi.project.utilities.CollisionListener;
 import nastmi.project.utilities.ObjectLayerRenderer;
 
 public class GameScreen implements Screen, InputProcessor {
@@ -35,10 +36,12 @@ public class GameScreen implements Screen, InputProcessor {
     BodyDef bodyDef;
     Body body;
     Player player;
+    CollisionListener Listener;
 
 
     public GameScreen(final MainGame game){
         this.game=game;
+        Listener = new CollisionListener();
         //Create camera, and link it to a viewport, so sizes of textures scale properly.
         camera = new OrthographicCamera();
         viewport = new FitViewport(16,9,camera);
@@ -53,6 +56,7 @@ public class GameScreen implements Screen, InputProcessor {
         GAME_WORLD_HEIGHT = prop.get("height",Integer.class);
         //Create a world and build it's collisions.
         world = new World(new Vector2(0, -10),true);
+        world.setContactListener(Listener);
         CollisionBuilder.objectLayerToBox2D(map,world,1/48f);
         //Test body below.
         bodyDef = new BodyDef();
@@ -63,12 +67,13 @@ public class GameScreen implements Screen, InputProcessor {
         poly.setAsBox(0.5f,0.5f);
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = poly;
+        fixtureDef.isSensor = true;
         Fixture fixture = body.createFixture(fixtureDef);
-        fixtureDef.friction = 0.0f;
         player = new Player(10,7,new Sprite(new Texture("char.png")),48,48);
+    }
 
-
-
+    public static void test() {
+        System.out.println("CUCKERBOI");
     }
 
     @Override

@@ -26,7 +26,9 @@ public class CollisionBuilder {
                 PolygonShape shape = new PolygonShape();
                 shape.setAsBox(newObj.getRectangle().width*unitScale,newObj.getRectangle().height*unitScale);
                 FixtureDef fixDef = new FixtureDef();
-                Fixture fixture = body.createFixture(shape,0.0f);
+                fixDef.isSensor = true;
+                fixDef.shape = shape;
+                Fixture fixture = body.createFixture(fixDef);
             }
             else if(obj instanceof PolygonMapObject){
                 //Polygons are a bit more complex, so we need different code.
@@ -51,7 +53,10 @@ public class CollisionBuilder {
                     curVertices[5] = vertices[verticesIndexed[i+2]*2+1]*unitScale;
                     PolygonShape shape = new PolygonShape();
                     shape.set(curVertices);
-                    Fixture fixture = body.createFixture(shape,0.0f);
+                    FixtureDef fixDef = new FixtureDef();
+                    fixDef.isSensor = true;
+                    fixDef.shape = shape;
+                    Fixture fixture = body.createFixture(fixDef);
 
                 }
             }
