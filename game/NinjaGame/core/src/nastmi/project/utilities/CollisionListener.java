@@ -11,6 +11,7 @@ public class CollisionListener implements ContactListener {
     public void beginContact(Contact contact) {
         Fixture a = contact.getFixtureA();
         Fixture b = contact.getFixtureB();
+        a.getBody().setTransform(GameScreen.player.getOldX(),GameScreen.player.getOldY(),a.getBody().getAngle());
         System.out.println(a.getBody()+" collided with "+b.getBody());
     }
 

@@ -7,8 +7,18 @@ import com.badlogic.gdx.physics.box2d.World;
 public class Player extends Entity{
     int health;
     Sprite sprite;
+    float oldX;
+    float oldY;
 
-    public Player(int x,int y, Sprite startSprite, float width, float height){
+    public float getOldX() {
+        return oldX;
+    }
+
+    public float getOldY() {
+        return oldY;
+    }
+
+    public Player(int x, int y, Sprite startSprite, float width, float height){
         this.x = x;
         this.y = y;
         this.sprite = startSprite;
@@ -24,5 +34,21 @@ public class Player extends Entity{
 
     public Sprite getSprite() {
         return sprite;
+    }
+
+    public void setHealth(int health) {
+        this.health = health;
+    }
+
+    public void setSprite(Sprite sprite) {
+        this.sprite = sprite;
+    }
+
+    public void setOldX(float oldX) {
+        this.oldX = oldX;
+    }
+
+    public void setOldY(float oldY) {
+        this.oldY = oldY;
     }
 }

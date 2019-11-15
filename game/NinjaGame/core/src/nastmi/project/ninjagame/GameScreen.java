@@ -34,8 +34,8 @@ public class GameScreen implements Screen, InputProcessor {
     World world;
     Box2DDebugRenderer debugRenderer = new Box2DDebugRenderer();
     BodyDef bodyDef;
-    Body body;
-    Player player;
+    static Body body;
+    public static Player player;
     CollisionListener Listener;
 
 
@@ -70,11 +70,9 @@ public class GameScreen implements Screen, InputProcessor {
         fixtureDef.isSensor = true;
         Fixture fixture = body.createFixture(fixtureDef);
         player = new Player(10,7,new Sprite(new Texture("char.png")),48,48);
+        body.setUserData(player);
     }
 
-    public static void test() {
-        System.out.println("CUCKERBOI");
-    }
 
     @Override
     public void render(float delta) {
@@ -150,8 +148,11 @@ public class GameScreen implements Screen, InputProcessor {
     }
 
     public static void drawPlayer(Player player, Batch batch, float unitScale){
-        batch.draw(player.getSprite().getTexture(),player.getX(),player.getY(),player.getSprite().getTexture().getWidth()*unitScale,player.getSprite().getTexture().getHeight()*unitScale);
-
+        batch.draw(player.getSprite().getTexture(),body.getPosition().x-(player.getWidth()*unitScale/2),body.getPosition().y-(player.getWidth()*unitScale/2),player.getWidth()*unitScale,player.getHeight()*unitScale);
+        player.setOldX(player.getX());
+        player.setOldY(player.getY());
+        player.setX(body.getPosition().x);
+        player.setY(body.getPosition().y);
     }
 
 
