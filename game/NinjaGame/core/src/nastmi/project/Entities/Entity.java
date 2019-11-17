@@ -1,4 +1,10 @@
 package nastmi.project.Entities;
+
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.Fixture;
+import com.badlogic.gdx.physics.box2d.FixtureDef;
+
 //Base class for entities. Should never actually be used on it's own, use subclasses instead, depending on the type of entity.
 public class Entity {
     float x;
@@ -6,6 +12,10 @@ public class Entity {
     float width;
     float height;
     float speed;
+    Body body;
+    BodyDef bodyDef;
+    FixtureDef fixtureDef;
+    Fixture fixture;
 
     public float getX() {
         return x;

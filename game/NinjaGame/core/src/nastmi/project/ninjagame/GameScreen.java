@@ -33,9 +33,8 @@ public class GameScreen implements Screen, InputProcessor {
     boolean downPressed = false;
     World world;
     Box2DDebugRenderer debugRenderer = new Box2DDebugRenderer();
-    BodyDef bodyDef;
-    static Body body;
-    public static Player player;
+    Player player;
+    Player test;
     CollisionListener Listener;
 
 
@@ -55,62 +54,33 @@ public class GameScreen implements Screen, InputProcessor {
         GAME_WORLD_WIDTH = prop.get("width",Integer.class);
         GAME_WORLD_HEIGHT = prop.get("height",Integer.class);
         //Create a world and build it's collisions.
-        world = new World(new Vector2(0, -10),true);
+        world = new World(new Vector2(0, 0),false);
         world.setContactListener(Listener);
         CollisionBuilder.objectLayerToBox2D(map,world,1/48f);
-        //Test body below.
-        bodyDef = new BodyDef();
-        bodyDef.type = BodyType.DynamicBody;
-        bodyDef.position.set(camera.position.x,camera.position.y);
-        body = world.createBody(bodyDef);
-        PolygonShape poly = new PolygonShape();
-        poly.setAsBox(0.5f,0.5f);
-        FixtureDef fixtureDef = new FixtureDef();
-        fixtureDef.shape = poly;
-        fixtureDef.isSensor = true;
-        Fixture fixture = body.createFixture(fixtureDef);
-        player = new Player(10,7,new Sprite(new Texture("char.png")),48,48);
-        body.setUserData(player);
+        player = new Player(10,7,new Sprite(new Texture("char.png")),48,48,world,"good");
+        System.out.println(player.getName());
+        test = new Player(7,7,new Sprite(new Texture("enemy.png")),48,48,world,"bad");
+        System.out.println(player.getName());
     }
 
 
     @Override
     public void render(float delta) {
-        if(camera.position.y > 4.5)
-            camera.position.set(body.getPosition(),0.0f);
-        else
-            camera.position.set(body.getPosition().x,4.5f,0.0f);
         camera.update();
         renderer.setView(camera);
         renderer.render();
-        game.batch.begin();
-        game.batch.setProjectionMatrix(camera.combined);
-        drawPlayer(player,game.batch,1/48f);
-        game.batch.end();
         if(rightPressed) {
-            body.applyLinearImpulse(0.1f,0.0f,body.getPosition().x,body.getPosition().y,true);
-           /* if(camera.position.x < GAME_WORLD_WIDTH-8)
-                camera.translate(0.05f, 0);*/
+            player.move("right");
         }
         if(leftPressed) {
-            body.applyLinearImpulse(-0.1f,0.0f,body.getPosition().x,body.getPosition().y,true);
-            /*if(camera.position.x > 8)
-                camera.translate(-0.05f, 0);*/
+            player.move("left");
         }
-        if(!rightPressed && !leftPressed){
-            body.setLinearVelocity(0.0f,body.getLinearVelocity().y);
-        }
-        if(upPressed) {
-            /*if(camera.position.y < GAME_WORLD_HEIGHT-4.5)
-                camera.translate(0, 0.05f);*/
-            body.applyLinearImpulse(0.0f,2f,body.getPosition().x,body.getPosition().y,true);
-        }
-        /*if(downPressed) {
-            if(camera.position.y > 4.5)
-                camera.translate(0, -0.05f);
-        }*/
-
         debugRenderer.render(world, camera.combined);
+        game.batch.begin();
+        game.batch.setProjectionMatrix(camera.combined);
+        drawPlayer(player,game.batch);
+        drawPlayer(test,game.batch);
+        game.batch.end();
         world.step(1/60f, 6, 2);
     }
 
@@ -147,14 +117,9 @@ public class GameScreen implements Screen, InputProcessor {
 
     }
 
-    public static void drawPlayer(Player player, Batch batch, float unitScale){
-        batch.draw(player.getSprite().getTexture(),body.getPosition().x-(player.getWidth()*unitScale/2),body.getPosition().y-(player.getWidth()*unitScale/2),player.getWidth()*unitScale,player.getHeight()*unitScale);
-        player.setOldX(player.getX());
-        player.setOldY(player.getY());
-        player.setX(body.getPosition().x);
-        player.setY(body.getPosition().y);
+    public static void drawPlayer(Player playerToDraw, Batch batch){
+        batch.draw(playerToDraw.getSprite().getTexture(),playerToDraw.getX(),playerToDraw.getY(),playerToDraw.getWidth(),playerToDraw.getHeight());
     }
-
 
     @Override
     public boolean keyDown(int keycode) {
