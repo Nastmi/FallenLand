@@ -56,4 +56,20 @@ public class Entity {
     public void setSpeed(float speed) {
         this.speed = speed;
     }
+
+    public Body getBody() {
+        return body;
+    }
+
+    public BodyDef getBodyDef() {
+        return bodyDef;
+    }
+
+    public FixtureDef getFixtureDef() {
+        return fixtureDef;
+    }
+
+    public Fixture getFixture() {
+        return fixture;
+    }
 }

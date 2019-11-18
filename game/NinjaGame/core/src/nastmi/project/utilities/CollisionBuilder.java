@@ -7,8 +7,6 @@ import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.math.EarClippingTriangulator;
-import java.time.Duration;
-import java.time.Instant;
 
 //gets a tiled map and a world, then converts all the non-texture objects into bodies in the world.
 public class CollisionBuilder {
@@ -21,10 +19,10 @@ public class CollisionBuilder {
             if(obj instanceof RectangleMapObject){
                 //Only happens if object is rectangle, as they are simple to create, and we need to separate them from polygons.
                 RectangleMapObject newObj = (RectangleMapObject) obj;
-                bodyDef.position.set(newObj.getRectangle().x*unitScale,newObj.getRectangle().y*unitScale);
+                bodyDef.position.set((newObj.getRectangle().x+(newObj.getRectangle().width/2))*unitScale,(newObj.getRectangle().y+(newObj.getRectangle().height/2))*unitScale);
                 Body body = world.createBody(bodyDef);
                 PolygonShape shape = new PolygonShape();
-                shape.setAsBox(newObj.getRectangle().width*unitScale,newObj.getRectangle().height*unitScale);
+                shape.setAsBox(((newObj.getRectangle().width*unitScale)/2),((newObj.getRectangle().height*unitScale))/2);
                 FixtureDef fixDef = new FixtureDef();
                 fixDef.isSensor = true;
                 fixDef.shape = shape;

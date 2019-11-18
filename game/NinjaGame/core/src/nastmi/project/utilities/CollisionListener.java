@@ -1,6 +1,7 @@
 package nastmi.project.utilities;
 
 import com.badlogic.gdx.physics.box2d.*;
+import nastmi.project.Entities.Player;
 import nastmi.project.ninjagame.GameScreen;
 
 
@@ -9,11 +10,7 @@ public class CollisionListener implements ContactListener {
 
     @Override
     public void beginContact(Contact contact) {
-        Fixture a = contact.getFixtureA();
-        Fixture b = contact.getFixtureB();
 
-        System.out.println(a.getBody()+" collided with "+b.getBody());
-        //GameScreen.resolveCollision(contact);
     }
 
     @Override

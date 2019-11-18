@@ -11,12 +11,15 @@ import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.physics.box2d.BodyDef.*;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import nastmi.project.Entities.Player;
 import nastmi.project.utilities.CollisionBuilder;
 import nastmi.project.utilities.CollisionListener;
 import nastmi.project.utilities.ObjectLayerRenderer;
+
+import java.util.Arrays;
 
 public class GameScreen implements Screen, InputProcessor {
     final MainGame game;
@@ -57,10 +60,8 @@ public class GameScreen implements Screen, InputProcessor {
         world = new World(new Vector2(0, 0),false);
         world.setContactListener(Listener);
         CollisionBuilder.objectLayerToBox2D(map,world,1/48f);
-        player = new Player(10,7,new Sprite(new Texture("char.png")),48,48,world,"good");
-        System.out.println(player.getName());
-        test = new Player(7,7,new Sprite(new Texture("enemy.png")),48,48,world,"bad");
-        System.out.println(player.getName());
+        player = new Player(10,7,new Sprite(new Texture("char.png")),1,1,world,"good",1);
+        test = new Player(7,7,new Sprite(new Texture("enemy.png")),1,1,world,"bad",1);
     }
 
 
@@ -69,19 +70,48 @@ public class GameScreen implements Screen, InputProcessor {
         camera.update();
         renderer.setView(camera);
         renderer.render();
-        if(rightPressed) {
-            player.move("right");
-        }
-        if(leftPressed) {
-            player.move("left");
-        }
         debugRenderer.render(world, camera.combined);
         game.batch.begin();
         game.batch.setProjectionMatrix(camera.combined);
         drawPlayer(player,game.batch);
         drawPlayer(test,game.batch);
         game.batch.end();
+        float dt = Math.min(Gdx.graphics.getDeltaTime(), 1 / 60f);
+        if(rightPressed) {
+            player.move("right",dt);
+        }
+        if(leftPressed) {
+            player.move("left",dt);
+        }
+        if(upPressed){
+            player.move("up",dt);
+        }
+        if(downPressed){
+            player.move("down",dt);
+        }
+        if(world.getContactCount()>0){
+            Array<Contact> arr = world.getContactList();
+            for(Contact contact:arr){
+                Fixture a = contact.getFixtureA();
+                Fixture b = contact.getFixtureB();
+                WorldManifold manifold = contact.getWorldManifold();
+                Vector2[] points = manifold.getPoints();
+                if(a.getBody().getUserData() instanceof Player){
+                    Player plr = (Player)a.getBody().getUserData();
+                    plr.setOldPosition();
+                    plr.setColided(true);
+                }
+                else if(b.getBody().getUserData() instanceof Player){
+                    Player plr = (Player)b.getBody().getUserData();
+                    plr.setOldPosition();
+                    plr.setColided(true);
+                }
+            }
+        }
+        if(!player.isColided())
+            player.updatePosition();
         world.step(1/60f, 6, 2);
+        player.setColided(false);
     }
 
 
