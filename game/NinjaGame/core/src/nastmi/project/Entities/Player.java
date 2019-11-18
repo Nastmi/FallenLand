@@ -12,7 +12,6 @@ public class Player extends Entity{
     float oldY;
     float speed;
     String name;
-    boolean colided;
 
     public String getName() {
         return name;
@@ -119,11 +118,4 @@ public class Player extends Entity{
         this.speed = speed;
     }
 
-    public boolean isColided() {
-        return colided;
-    }
-
-    public void setColided(boolean colided) {
-        this.colided = colided;
-    }
 }

@@ -60,7 +60,7 @@ public class GameScreen implements Screen, InputProcessor {
         world = new World(new Vector2(0, 0),false);
         world.setContactListener(Listener);
         CollisionBuilder.objectLayerToBox2D(map,world,1/48f);
-        player = new Player(10,7,new Sprite(new Texture("char.png")),1,1,world,"good",1);
+        player = new Player(10,7,new Sprite(new Texture("char.png")),1,1,world,"good",3);
         test = new Player(7,7,new Sprite(new Texture("enemy.png")),1,1,world,"bad",1);
     }
 
@@ -89,6 +89,7 @@ public class GameScreen implements Screen, InputProcessor {
         if(downPressed){
             player.move("down",dt);
         }
+        player.updatePosition();
         if(world.getContactCount()>0){
             Array<Contact> arr = world.getContactList();
             for(Contact contact:arr){
@@ -99,19 +100,16 @@ public class GameScreen implements Screen, InputProcessor {
                 if(a.getBody().getUserData() instanceof Player){
                     Player plr = (Player)a.getBody().getUserData();
                     plr.setOldPosition();
-                    plr.setColided(true);
+                    plr.setX(plr.getOldX());
+                    plr.setY(plr.getOldY());
                 }
                 else if(b.getBody().getUserData() instanceof Player){
                     Player plr = (Player)b.getBody().getUserData();
                     plr.setOldPosition();
-                    plr.setColided(true);
                 }
             }
         }
-        if(!player.isColided())
-            player.updatePosition();
         world.step(1/60f, 6, 2);
-        player.setColided(false);
     }
 
 
