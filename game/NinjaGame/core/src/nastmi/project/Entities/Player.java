@@ -1,6 +1,7 @@
 package nastmi.project.Entities;
 
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.physics.box2d.BodyDef.*;
 
@@ -10,7 +11,6 @@ public class Player extends Entity{
     Sprite sprite;
     float oldX;
     float oldY;
-    float speed;
     String name;
 
     public String getName() {
@@ -25,7 +25,7 @@ public class Player extends Entity{
         return oldY;
     }
 
-    public Player(int x, int y, Sprite startSprite, float width, float height, World world,String name, float speed){
+    public Player(int x, int y, Sprite startSprite, float width, float height,String name, float speed){
         this.x = x;
         this.y = y;
         this.oldX = x;
@@ -34,55 +34,42 @@ public class Player extends Entity{
         this.height = height;
         this.width = width;
         this.health = 20;
-        this.speed = speed;
-        bodyDef= new BodyDef();
-        bodyDef.type = BodyType.DynamicBody;
-        bodyDef.position.set(this.x+this.width/2,this.y+this.height/2);
-        body = world.createBody(bodyDef);
-        PolygonShape shape = new PolygonShape();
-        shape.setAsBox(this.height/2,this.width/2);
-        fixtureDef = new FixtureDef();
-        fixtureDef.shape = shape;
-        fixtureDef.isSensor = true;
-        fixture = body.createFixture(fixtureDef);
-        body.setUserData(this);
+        this.startSpeed = speed;
         this.name = name;
+        this.rect = new Rectangle();
+        this.rect.set(x,y,width,height);
     }
 
-    public void move(String direction, float dt){
+    public void move(float dt){
+        rect.setPosition(rect.getX()+currentSpeedX*dt,rect.getY()+currentSpeedY*dt);
+    }
+
+    public void setSpeed(String direction){
         switch (direction) {
             case "right":
-                body.setTransform(body.getPosition().x+speed*dt,body.getPosition().y,body.getAngle());
+                if(currentSpeedX < 3.0f)
+                    currentSpeedX += startSpeed;
                 break;
             case "left":
-                body.setTransform(body.getPosition().x-speed*dt,body.getPosition().y,body.getAngle());
+                if(currentSpeedX > -3.0f)
+                    currentSpeedX -= startSpeed;
                 break;
             case "up":
-                body.setTransform(body.getPosition().x,body.getPosition().y+speed*dt,body.getAngle());
-                break;
+                /*body.setTransform(body.getPosition().x,body.getPosition().y+currentSpeed*dt,body.getAngle());
+                break;*/
             case "down":
-                body.setTransform(body.getPosition().x,body.getPosition().y-speed*dt,body.getAngle());
+                /*body.setTransform(body.getPosition().x,body.getPosition().y-currentSpeed*dt,body.getAngle());
+                break;*/
+            case "stop":
+                currentSpeedX = 0;
                 break;
         }
     }
 
-    public void updatePosition(){
-        oldX = x;
-        oldY = y;
-        x = body.getPosition().x-width/2;
-        y = body.getPosition().y-height/2;
-    }
+    /*public void move(float dt){
+        body.setTransform(body.getPosition().x+currentSpeedX*dt,body.getPosition().y+currentSpeedY*dt,body.getAngle());
+    }*/
 
-    public void reverseUpdatePosition(){
-        x = oldX;
-        y = oldY;
-        oldX = x = body.getPosition().x-width/2;
-        oldY = body.getPosition().y-height/2;
-    }
-
-    public void setOldPosition(){
-        body.setTransform(oldX+width/2,oldY+height/2,body.getAngle());
-    }
 
     public int getHealth() {
         return health;
@@ -108,14 +95,5 @@ public class Player extends Entity{
         this.oldY = oldY;
     }
 
-    @Override
-    public float getSpeed() {
-        return speed;
-    }
-
-    @Override
-    public void setSpeed(float speed) {
-        this.speed = speed;
-    }
 
 }

@@ -1,5 +1,6 @@
 package nastmi.project.Entities;
 
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.Fixture;
@@ -11,11 +12,10 @@ public class Entity {
     float y;
     float width;
     float height;
-    float speed;
-    Body body;
-    BodyDef bodyDef;
-    FixtureDef fixtureDef;
-    Fixture fixture;
+    float startSpeed;
+    float currentSpeedX;
+    float currentSpeedY;
+    Rectangle rect;
 
     public float getX() {
         return x;
@@ -31,10 +31,6 @@ public class Entity {
 
     public float getHeight() {
         return height;
-    }
-
-    public float getSpeed() {
-        return speed;
     }
 
     public void setX(float x) {
@@ -53,23 +49,27 @@ public class Entity {
         this.height = height;
     }
 
-    public void setSpeed(float speed) {
-        this.speed = speed;
+    public float getCurrentSpeedX() {
+        return currentSpeedX;
     }
 
-    public Body getBody() {
-        return body;
+    public void setCurrentSpeedX(float currentSpeedX) {
+        this.currentSpeedX = currentSpeedX;
     }
 
-    public BodyDef getBodyDef() {
-        return bodyDef;
+    public float getCurrentSpeedY() {
+        return currentSpeedY;
     }
 
-    public FixtureDef getFixtureDef() {
-        return fixtureDef;
+    public void setCurrentSpeedY(float currentSpeedY) {
+        this.currentSpeedY = currentSpeedY;
     }
 
-    public Fixture getFixture() {
-        return fixture;
+    public Rectangle getRect() {
+        return rect;
+    }
+
+    public void setRect(Rectangle rect) {
+        this.rect = rect;
     }
 }

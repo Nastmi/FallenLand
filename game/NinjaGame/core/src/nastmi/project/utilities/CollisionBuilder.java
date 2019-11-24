@@ -5,13 +5,15 @@ import com.badlogic.gdx.maps.MapObjects;
 import com.badlogic.gdx.maps.objects.PolygonMapObject;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.math.EarClippingTriangulator;
+import com.badlogic.gdx.utils.Array;
 
 //gets a tiled map and a world, then converts all the non-texture objects into bodies in the world.
 public class CollisionBuilder {
     //all coordinates and sizes should be multiplied by unitScale, so you work with arbitrary units instead of pixels.
-    public static void objectLayerToBox2D(TiledMap map, World world, float unitScale){
+    public static void objectLayerToBox2D(TiledMap map, Array<Rectangle> arr, float unitScale){
         MapObjects objects = map.getLayers().get("collisionLayer").getObjects();
         for(MapObject obj : objects){
             BodyDef bodyDef = new BodyDef();
@@ -19,17 +21,12 @@ public class CollisionBuilder {
             if(obj instanceof RectangleMapObject){
                 //Only happens if object is rectangle, as they are simple to create, and we need to separate them from polygons.
                 RectangleMapObject newObj = (RectangleMapObject) obj;
-                bodyDef.position.set((newObj.getRectangle().x+(newObj.getRectangle().width/2))*unitScale,(newObj.getRectangle().y+(newObj.getRectangle().height/2))*unitScale);
-                Body body = world.createBody(bodyDef);
-                PolygonShape shape = new PolygonShape();
-                shape.setAsBox(((newObj.getRectangle().width*unitScale)/2),((newObj.getRectangle().height*unitScale))/2);
-                FixtureDef fixDef = new FixtureDef();
-                fixDef.isSensor = true;
-                fixDef.shape = shape;
-                Fixture fixture = body.createFixture(fixDef);
+                Rectangle rect = new Rectangle();
+                rect.set(newObj.getRectangle().x*unitScale,newObj.getRectangle().y*unitScale,newObj.getRectangle().getWidth()*unitScale,newObj.getRectangle().getHeight()*unitScale);
+                arr.add(rect);
             }
-            else if(obj instanceof PolygonMapObject){
-                //Polygons are a bit more complex, so we need different code.
+            /*else if(obj instanceof PolygonMapObject){
+               //Polygons are a bit more complex, so we need different code.
                 PolygonMapObject newObj = (PolygonMapObject) obj;
                 bodyDef.position.set(newObj.getPolygon().getX()*unitScale,newObj.getPolygon().getY()*unitScale);
                 Body body = world.createBody(bodyDef);
@@ -37,7 +34,7 @@ public class CollisionBuilder {
                 float[] vertices = newObj.getPolygon().getVertices();
                 /*Due to convex polygons not being implemented in Box2d, and due to the max vertice(point) amount being eight, we have to create triangles.
                 the below method returns INDEXES of the given array. Those indexes tell us, in what order of vertices should each triangle be drawn*/
-                EarClippingTriangulator clip = new EarClippingTriangulator();
+              /*  EarClippingTriangulator clip = new EarClippingTriangulator();
                 short[] verticesIndexed = clip.computeTriangles(vertices).toArray();
                 for(int i=0;i<verticesIndexed.length;i+=3){
                     //Each triangle is a seperate fixture for our body
@@ -57,7 +54,7 @@ public class CollisionBuilder {
                     Fixture fixture = body.createFixture(fixDef);
 
                 }
-            }
+            }*/
         }
     }
 }

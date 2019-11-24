@@ -1,30 +1,20 @@
 package nastmi.project.utilities;
 
-import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.utils.Array;
 import nastmi.project.Entities.Player;
-import nastmi.project.ninjagame.GameScreen;
+import com.badlogic.gdx.math.Intersector;
 
 
-public class CollisionListener implements ContactListener {
-
-
-    @Override
-    public void beginContact(Contact contact) {
-
-    }
-
-    @Override
-    public void endContact(Contact contact) {
+public class CollisionListener{
+    public static Intersector intersector = new Intersector();
+    public static void checkCollision(Player player, Array<Rectangle> arrOfCollisions){
+        Rectangle interesctions = new Rectangle();
+        for(Rectangle r:arrOfCollisions){
+            if(intersector.intersectRectangles(player.getRect(),r,interesctions))
+                
+        }
 
     }
 
-    @Override
-    public void preSolve(Contact contact, Manifold oldManifold) {
-
-    }
-
-    @Override
-    public void postSolve(Contact contact, ContactImpulse impulse) {
-
-    }
 };

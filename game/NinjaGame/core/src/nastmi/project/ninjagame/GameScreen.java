@@ -1,13 +1,17 @@
 package nastmi.project.ninjagame;
 
 import com.badlogic.gdx.*;
+import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.physics.box2d.BodyDef.*;
@@ -34,16 +38,16 @@ public class GameScreen implements Screen, InputProcessor {
     boolean leftPressed = false;
     boolean upPressed = false;
     boolean downPressed = false;
-    World world;
-    Box2DDebugRenderer debugRenderer = new Box2DDebugRenderer();
     Player player;
     Player test;
-    CollisionListener Listener;
+    CollisionListener Listener;    Rectangle rect;
+    ShapeRenderer renderShape;
+    Array<Rectangle> arrOfCollisions;
 
 
     public GameScreen(final MainGame game){
         this.game=game;
-        Listener = new CollisionListener();
+        arrOfCollisions = new Array<>();
         //Create camera, and link it to a viewport, so sizes of textures scale properly.
         camera = new OrthographicCamera();
         viewport = new FitViewport(16,9,camera);
@@ -57,11 +61,10 @@ public class GameScreen implements Screen, InputProcessor {
         GAME_WORLD_WIDTH = prop.get("width",Integer.class);
         GAME_WORLD_HEIGHT = prop.get("height",Integer.class);
         //Create a world and build it's collisions.
-        world = new World(new Vector2(0, 0),false);
-        world.setContactListener(Listener);
-        CollisionBuilder.objectLayerToBox2D(map,world,1/48f);
-        player = new Player(10,7,new Sprite(new Texture("char.png")),1,1,world,"good",3);
-        test = new Player(7,7,new Sprite(new Texture("enemy.png")),1,1,world,"bad",1);
+        CollisionBuilder.objectLayerToBox2D(map,arrOfCollisions,1/48f);
+        player = new Player(10,7,new Sprite(new Texture("char.png")),1,1,"good",3);
+        test = new Player(7,7,new Sprite(new Texture("enemy.png")),1,1,"bad",0);
+        renderShape = new ShapeRenderer();
     }
 
 
@@ -70,48 +73,49 @@ public class GameScreen implements Screen, InputProcessor {
         camera.update();
         renderer.setView(camera);
         renderer.render();
-        debugRenderer.render(world, camera.combined);
+        debugRender(arrOfCollisions,renderShape,camera,player.getRect(),test.getRect());
         game.batch.begin();
         game.batch.setProjectionMatrix(camera.combined);
         drawPlayer(player,game.batch);
-        drawPlayer(test,game.batch);
+        //drawPlayer(test,game.batch);
         game.batch.end();
-        float dt = Math.min(Gdx.graphics.getDeltaTime(), 1 / 60f);
         if(rightPressed) {
-            player.move("right",dt);
+            player.setSpeed("right");
         }
         if(leftPressed) {
-            player.move("left",dt);
+            player.setSpeed("left");
         }
         if(upPressed){
-            player.move("up",dt);
+            player.setSpeed("up");
         }
-        if(downPressed){
-            player.move("down",dt);
+        if(downPressed) {
+            player.setSpeed("down");
         }
-        player.updatePosition();
-        if(world.getContactCount()>0){
-            Array<Contact> arr = world.getContactList();
-            for(Contact contact:arr){
-                Fixture a = contact.getFixtureA();
-                Fixture b = contact.getFixtureB();
-                WorldManifold manifold = contact.getWorldManifold();
-                Vector2[] points = manifold.getPoints();
-                if(a.getBody().getUserData() instanceof Player){
-                    Player plr = (Player)a.getBody().getUserData();
-                    plr.setOldPosition();
-                    plr.setX(plr.getOldX());
-                    plr.setY(plr.getOldY());
-                }
-                else if(b.getBody().getUserData() instanceof Player){
-                    Player plr = (Player)b.getBody().getUserData();
-                    plr.setOldPosition();
-                }
-            }
+        if(!rightPressed && !leftPressed){
+            player.setSpeed("stop");
         }
-        world.step(1/60f, 6, 2);
+
+        float dt = Math.min(Gdx.graphics.getDeltaTime(), 1 / 60f);
+        player.move(dt);
+        CollisionListener.checkCollision(player,arrOfCollisions);
     }
 
+    public static void debugRender(Array<Rectangle> arr, ShapeRenderer renderShape, Camera camera, Rectangle... r){
+        for(Rectangle rect:arr){
+            renderShape.setProjectionMatrix(camera.combined);
+            renderShape.begin(ShapeRenderer.ShapeType.Line);
+            renderShape.setColor(Color.BLUE);
+            renderShape.rect(rect.x, rect.y, rect.width, rect.height);
+            renderShape.end();
+        }
+        for(Rectangle rect:r){
+            renderShape.setProjectionMatrix(camera.combined);
+            renderShape.begin(ShapeRenderer.ShapeType.Line);
+            renderShape.setColor(Color.BLUE);
+            renderShape.rect(rect.x, rect.y, rect.width, rect.height);
+            renderShape.end();
+        }
+    }
 
     @Override
     public void show() {
@@ -146,7 +150,7 @@ public class GameScreen implements Screen, InputProcessor {
     }
 
     public static void drawPlayer(Player playerToDraw, Batch batch){
-        batch.draw(playerToDraw.getSprite().getTexture(),playerToDraw.getX(),playerToDraw.getY(),playerToDraw.getWidth(),playerToDraw.getHeight());
+        batch.draw(playerToDraw.getSprite().getTexture(),playerToDraw.getRect().getX(),playerToDraw.getRect().getY(),playerToDraw.getWidth(),playerToDraw.getHeight());
     }
 
     @Override
@@ -170,9 +174,11 @@ public class GameScreen implements Screen, InputProcessor {
     public boolean keyUp(int keycode) {
         if(keycode == Input.Keys.LEFT){
             leftPressed = false;
+            player.setSpeed("right");
         }
         if(keycode == Input.Keys.RIGHT){
             rightPressed = false;
+            player.setSpeed("left");
         }
         if(keycode == Input.Keys.UP){
             upPressed = false;
