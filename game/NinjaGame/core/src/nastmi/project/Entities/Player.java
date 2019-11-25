@@ -33,7 +33,7 @@ public class Player extends Entity{
     }
 
     public void move(float dt){
-        rect.setPosition(rect.getX()+currentSpeedX*dt,rect.getY()+currentSpeedY);
+        rect.setPosition(rect.getX()+currentSpeedX*dt,rect.getY()+currentSpeedY*dt);
     }
 
     public void setSpeed(String direction){
@@ -46,6 +46,12 @@ public class Player extends Entity{
                 if(currentSpeedX > -3.0f)
                     currentSpeedX -= startSpeed;
                 break;
+            case "up":
+                if(currentSpeedY<12f)
+                    currentSpeedY += 12.0f;
+                else if(currentSpeedY>12f)
+                    currentSpeedY = 12.0f;
+                break;
             case "stop":
                 currentSpeedX = 0;
                 break;
@@ -53,10 +59,11 @@ public class Player extends Entity{
     }
 
     public void applyGravity(float dt){
-        if(currentSpeedY >= -3.0f) {
-            currentSpeedY = currentSpeedY - 3.0f * dt;
-            System.out.println(currentSpeedY);
+        if(currentSpeedY >= -10.0f) {
+            currentSpeedY = currentSpeedY - 0.2f;
         }
+        else if(currentSpeedY < -10.0f)
+            currentSpeedY = -10.0f;
 
     }
 

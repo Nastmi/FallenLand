@@ -65,8 +65,8 @@ public class GameScreen implements Screen, InputProcessor {
         //Create a world and build it's collisions.
         CollisionBuilder.objectLayerToBox2D(map,arrOfCollisions,1/48f);
         player = new Player(10,7,new Sprite(new Texture("char.png")),1,1,3);
-        test = new Player(7,7,new Sprite(new Texture("enemy.png")),1,1,0);
-        third = new Player(13,7,new Sprite(new Texture("enemy.png")),1,1,0);
+        test = new Player(7,7,new Sprite(new Texture("enemy.png")),2,2,0);
+        third = new Player(13,7,new Sprite(new Texture("enemy.png")),2,2,0);
         renderShape = new ShapeRenderer();
     }
 
@@ -74,8 +74,8 @@ public class GameScreen implements Screen, InputProcessor {
     @Override
     public void render(float delta) {
         float dt = Math.min(Gdx.graphics.getDeltaTime(), 1 / 60f);
-        player.applyGravity(dt);
         player.move(dt);
+        player.applyGravity(dt);
         CollisionListener.checkCollision(player,arrOfCollisions,test,third);
         camera.update();
         renderer.setView(camera);
@@ -92,7 +92,7 @@ public class GameScreen implements Screen, InputProcessor {
             player.setSpeed("left");
         }
         if(upPressed){
-            player.setSpeed("up");
+           // player.setSpeed("up");
         }
         if(downPressed) {
             player.setSpeed("down");
@@ -166,6 +166,7 @@ public class GameScreen implements Screen, InputProcessor {
         }
         if(keycode == Input.Keys.UP){
             upPressed = true;
+            player.setSpeed("up");
         }
         if(keycode == Input.Keys.DOWN){
             downPressed = true;
