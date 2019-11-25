@@ -38,8 +38,10 @@ public class GameScreen implements Screen, InputProcessor {
     boolean leftPressed = false;
     boolean upPressed = false;
     boolean downPressed = false;
+    public static boolean leftDisabled = false;
     Player player;
     Player test;
+    Player third;
     CollisionListener Listener;    Rectangle rect;
     ShapeRenderer renderShape;
     Array<Rectangle> arrOfCollisions;
@@ -62,27 +64,31 @@ public class GameScreen implements Screen, InputProcessor {
         GAME_WORLD_HEIGHT = prop.get("height",Integer.class);
         //Create a world and build it's collisions.
         CollisionBuilder.objectLayerToBox2D(map,arrOfCollisions,1/48f);
-        player = new Player(10,7,new Sprite(new Texture("char.png")),1,1,"good",3);
-        test = new Player(7,7,new Sprite(new Texture("enemy.png")),1,1,"bad",0);
+        player = new Player(10,7,new Sprite(new Texture("char.png")),1,1,3);
+        test = new Player(7,7,new Sprite(new Texture("enemy.png")),1,1,0);
+        third = new Player(13,7,new Sprite(new Texture("enemy.png")),1,1,0);
         renderShape = new ShapeRenderer();
     }
 
 
     @Override
     public void render(float delta) {
+        float dt = Math.min(Gdx.graphics.getDeltaTime(), 1 / 60f);
+        player.applyGravity(dt);
+        player.move(dt);
+        CollisionListener.checkCollision(player,arrOfCollisions,test,third);
         camera.update();
         renderer.setView(camera);
         renderer.render();
-        debugRender(arrOfCollisions,renderShape,camera,player.getRect(),test.getRect());
         game.batch.begin();
         game.batch.setProjectionMatrix(camera.combined);
         drawPlayer(player,game.batch);
-        //drawPlayer(test,game.batch);
+        drawPlayer(test,game.batch);
         game.batch.end();
         if(rightPressed) {
             player.setSpeed("right");
         }
-        if(leftPressed) {
+        if(leftPressed && !leftDisabled) {
             player.setSpeed("left");
         }
         if(upPressed){
@@ -94,10 +100,7 @@ public class GameScreen implements Screen, InputProcessor {
         if(!rightPressed && !leftPressed){
             player.setSpeed("stop");
         }
-
-        float dt = Math.min(Gdx.graphics.getDeltaTime(), 1 / 60f);
-        player.move(dt);
-        CollisionListener.checkCollision(player,arrOfCollisions);
+        debugRender(arrOfCollisions,renderShape,camera,player.getRect(),test.getRect(),third.getRect());
     }
 
     public static void debugRender(Array<Rectangle> arr, ShapeRenderer renderShape, Camera camera, Rectangle... r){
@@ -174,11 +177,11 @@ public class GameScreen implements Screen, InputProcessor {
     public boolean keyUp(int keycode) {
         if(keycode == Input.Keys.LEFT){
             leftPressed = false;
-            player.setSpeed("right");
+            player.setSpeed("stop");
         }
         if(keycode == Input.Keys.RIGHT){
             rightPressed = false;
-            player.setSpeed("left");
+            player.setSpeed("stop");
         }
         if(keycode == Input.Keys.UP){
             upPressed = false;

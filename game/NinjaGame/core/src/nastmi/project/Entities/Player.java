@@ -11,11 +11,6 @@ public class Player extends Entity{
     Sprite sprite;
     float oldX;
     float oldY;
-    String name;
-
-    public String getName() {
-        return name;
-    }
 
     public float getOldX() {
         return oldX;
@@ -25,23 +20,20 @@ public class Player extends Entity{
         return oldY;
     }
 
-    public Player(int x, int y, Sprite startSprite, float width, float height,String name, float speed){
+    public Player(int x, int y, Sprite startSprite, float width, float height, float speed){
         this.x = x;
         this.y = y;
-        this.oldX = x;
-        this.oldY = y;
         this.sprite = startSprite;
         this.height = height;
         this.width = width;
         this.health = 20;
         this.startSpeed = speed;
-        this.name = name;
         this.rect = new Rectangle();
         this.rect.set(x,y,width,height);
     }
 
     public void move(float dt){
-        rect.setPosition(rect.getX()+currentSpeedX*dt,rect.getY()+currentSpeedY*dt);
+        rect.setPosition(rect.getX()+currentSpeedX*dt,rect.getY()+currentSpeedY);
     }
 
     public void setSpeed(String direction){
@@ -54,22 +46,19 @@ public class Player extends Entity{
                 if(currentSpeedX > -3.0f)
                     currentSpeedX -= startSpeed;
                 break;
-            case "up":
-                /*body.setTransform(body.getPosition().x,body.getPosition().y+currentSpeed*dt,body.getAngle());
-                break;*/
-            case "down":
-                /*body.setTransform(body.getPosition().x,body.getPosition().y-currentSpeed*dt,body.getAngle());
-                break;*/
             case "stop":
                 currentSpeedX = 0;
                 break;
         }
     }
 
-    /*public void move(float dt){
-        body.setTransform(body.getPosition().x+currentSpeedX*dt,body.getPosition().y+currentSpeedY*dt,body.getAngle());
-    }*/
+    public void applyGravity(float dt){
+        if(currentSpeedY >= -3.0f) {
+            currentSpeedY = currentSpeedY - 3.0f * dt;
+            System.out.println(currentSpeedY);
+        }
 
+    }
 
     public int getHealth() {
         return health;
