@@ -22,8 +22,10 @@ public class CollisionListener{
                         player.getRect().setX(r.getX()-player.getWidth());
                 }
                 else if(intersections.getWidth()>intersections.getHeight()){
-                    if(player.getCurrentSpeedY()<0)
-                        player.getRect().setY(r.getY()+r.getHeight());
+                    if(player.getCurrentSpeedY()<0) {
+                        player.getRect().setY(r.getY() + r.getHeight());
+                        player.setJumpCounter(0);
+                    }
                     else if(player.getCurrentSpeedY()>0) {
                         player.getRect().setY(r.getY() - player.getRect().getHeight());
                     }

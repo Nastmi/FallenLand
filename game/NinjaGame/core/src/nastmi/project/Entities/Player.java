@@ -11,6 +11,7 @@ public class Player extends Entity{
     Sprite sprite;
     float oldX;
     float oldY;
+    int jumpCounter;
 
     public float getOldX() {
         return oldX;
@@ -47,10 +48,10 @@ public class Player extends Entity{
                     currentSpeedX -= startSpeed;
                 break;
             case "up":
-                if(currentSpeedY<12f)
-                    currentSpeedY += 12.0f;
-                else if(currentSpeedY>12f)
-                    currentSpeedY = 12.0f;
+                if(jumpCounter < 2) {
+                    currentSpeedY += 12;
+                    jumpCounter++;
+                }
                 break;
             case "stop":
                 currentSpeedX = 0;
@@ -92,4 +93,11 @@ public class Player extends Entity{
     }
 
 
+    public int getJumpCounter() {
+        return jumpCounter;
+    }
+
+    public void setJumpCounter(int jumpCounter) {
+        this.jumpCounter = jumpCounter;
+    }
 }
