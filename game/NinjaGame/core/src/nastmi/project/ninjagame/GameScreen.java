@@ -65,8 +65,8 @@ public class GameScreen implements Screen, InputProcessor {
         //Create a world and build it's collisions.
         CollisionBuilder.objectLayerToBox2D(map,arrOfCollisions,1/48f);
         player = new Player(10,7,new Sprite(new Texture("char.png")),1,1,3);
-        test = new Player(7,7,new Sprite(new Texture("enemy.png")),2,2,0);
-        third = new Player(13,7,new Sprite(new Texture("enemy.png")),2,2,0);
+        test = new Player(7,5,new Sprite(new Texture("enemy.png")),2,2,0);
+        third = new Player(13,5,new Sprite(new Texture("enemy.png")),2,2,0);
         renderShape = new ShapeRenderer();
     }
 

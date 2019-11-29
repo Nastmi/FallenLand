@@ -49,7 +49,7 @@ public class Player extends Entity{
                 break;
             case "up":
                 if(jumpCounter < 2) {
-                    currentSpeedY += 12;
+                    currentSpeedY = 8;
                     jumpCounter++;
                 }
                 break;

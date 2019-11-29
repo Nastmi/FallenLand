@@ -16,44 +16,57 @@ public class CollisionListener{
         for(Rectangle r:arrOfCollisions){
             if(intersector.intersectRectangles(player.getRect(),r,intersections)){
                 if(intersections.getHeight()>intersections.getWidth()){
-                    if(player.getCurrentSpeedX()<0)
+                    if(intersections.getX()>r.getX()+r.getWidth()/2)
                         player.getRect().setX(r.getX()+player.getWidth());
-                    else if(player.getCurrentSpeedX()>0)
+                    else if(intersections.getX()<r.getX()+r.getWidth()/2)
                         player.getRect().setX(r.getX()-player.getWidth());
                 }
-                else if(intersections.getWidth()>intersections.getHeight()){
-                    if(player.getCurrentSpeedY()<0) {
+                else if(intersections.getWidth()>intersections.getHeight()) {
+                    if (intersections.getY() > r.getY() + r.getHeight() / 2) {
                         player.getRect().setY(r.getY() + r.getHeight());
                         player.setJumpCounter(0);
+                        player.setCurrentSpeedY(0);
                     }
-                    else if(player.getCurrentSpeedY()>0) {
+                    else if (intersections.getY() < r.getY() + r.getHeight() / 2) {
                         player.getRect().setY(r.getY() - player.getRect().getHeight());
                     }
                 }
-
 
             }
         }
         for(Player plr:p){
             if(intersector.intersectRectangles(player.getRect(),plr.getRect(),intersections)){
-                System.out.println("Height: "+intersections.getHeight()+" width: "+intersections.getWidth());
                 if(intersections.getHeight()>intersections.getWidth()){
-                    if(player.getCurrentSpeedX()<0)
-                        player.getRect().setX(plr.getRect().getX()+plr.getWidth());
-                    else if(player.getCurrentSpeedX()>0)
+
+                    System.out.println("duck");
+                    if(intersections.getX()>plr.getRect().getX()+plr.getRect().getWidth()/2) {
+                        player.getRect().setX(plr.getRect().getX() + plr.getWidth());
+                        player.setCurrentSpeedX(0.0f);
+                    }
+                    else if(intersections.getX()<plr.getRect().getX()+plr.getRect().getWidth()/2){
+
                         player.getRect().setX(plr.getRect().getX()-player.getWidth());
+                        player.setCurrentSpeedX(0.0f);
+                    }
                 }
                 else if(intersections.getWidth()>intersections.getHeight()){
-                    System.out.println("HEre");
-                    if(player.getCurrentSpeedY()<0)
-                        player.getRect().setY(plr.getRect().getY()+plr.getHeight());
-                    else if(player.getCurrentSpeedY()>0) {
-                        player.getRect().setY(plr.getRect().getY() - player.getRect().getHeight());
+                    System.out.println("buck");
+                    if(intersections.getY()>plr.getRect().getY()+plr.getRect().getHeight()/2) {
+                        player.getRect().setY(plr.getRect().getY() + plr.getHeight());
+                        player.setJumpCounter(0);
                         player.setCurrentSpeedY(0.0f);
                     }
+                    else if(intersections.getY()<plr.getRect().getY()+plr.getRect().getHeight()/2) {
+                        player.getRect().setY(plr.getRect().getY() - player.getRect().getHeight());
+                        player.setCurrentSpeedY(0.0f);
+
+                    }
+                }
+                else if(intersections.getWidth()==intersections.getHeight()){
+                    System.out.println("cuck");
                 }
             }
         }
     }
 
-};
+}
