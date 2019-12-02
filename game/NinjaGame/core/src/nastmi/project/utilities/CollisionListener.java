@@ -44,7 +44,10 @@ public class CollisionListener{
         for(Player plr:p){
             if(intersector.intersectRectangles(player.getRect(),plr.getRect(),intersections)){
                 if(intersections.getHeight()>intersections.getWidth()){
+<<<<<<< Updated upstream
 
+=======
+>>>>>>> Stashed changes
                     if(intersections.getX()>plr.getRect().getX()+plr.getRect().getWidth()/2) {
                         player.getRect().setX(plr.getRect().getX() + plr.getWidth());
                         player.setCurrentSpeedX(0.0f);
@@ -66,6 +69,12 @@ public class CollisionListener{
 
                     }
                 }
+<<<<<<< Updated upstream
+=======
+                else if(intersections.getWidth()==intersections.getHeight()){
+                    System.out.println("why");
+                }
+>>>>>>> Stashed changes
             }
         }
     }

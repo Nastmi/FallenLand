@@ -74,6 +74,7 @@ public class GameScreen implements Screen, InputProcessor {
     @Override
     public void render(float delta) {
         float dt = Math.min(Gdx.graphics.getDeltaTime(), 1 / 60f);
+        System.out.println(dt);
         player.move(dt);
         player.applyGravity(dt);
         CollisionListener.checkCollision(player,arrOfCollisions,test,third);
