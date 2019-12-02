@@ -9,17 +9,8 @@ import com.badlogic.gdx.physics.box2d.BodyDef.*;
 public class Player extends Entity{
     int health;
     Sprite sprite;
-    float oldX;
-    float oldY;
     int jumpCounter;
 
-    public float getOldX() {
-        return oldX;
-    }
-
-    public float getOldY() {
-        return oldY;
-    }
 
     public Player(int x, int y, Sprite startSprite, float width, float height, float speed){
         this.x = x;
@@ -33,9 +24,6 @@ public class Player extends Entity{
         this.rect.set(x,y,width,height);
     }
 
-    public void move(float dt){
-        rect.setPosition(rect.getX()+currentSpeedX*dt,rect.getY()+currentSpeedY*dt);
-    }
 
     public void setSpeed(String direction){
         switch (direction) {
@@ -48,7 +36,7 @@ public class Player extends Entity{
                     currentSpeedX -= startSpeed;
                 break;
             case "up":
-                if(jumpCounter < 2) {
+                if(jumpCounter < 3) {
                     currentSpeedY = 8;
                     jumpCounter++;
                 }
@@ -59,14 +47,6 @@ public class Player extends Entity{
         }
     }
 
-    public void applyGravity(float dt){
-        if(currentSpeedY >= -10.0f) {
-            currentSpeedY = currentSpeedY - 0.2f;
-        }
-        else if(currentSpeedY < -10.0f)
-            currentSpeedY = -10.0f;
-
-    }
 
     public int getHealth() {
         return health;
@@ -83,15 +63,6 @@ public class Player extends Entity{
     public void setSprite(Sprite sprite) {
         this.sprite = sprite;
     }
-
-    public void setOldX(float oldX) {
-        this.oldX = oldX;
-    }
-
-    public void setOldY(float oldY) {
-        this.oldY = oldY;
-    }
-
 
     public int getJumpCounter() {
         return jumpCounter;

@@ -17,6 +17,19 @@ public class Entity {
     float currentSpeedY;
     Rectangle rect;
 
+    public void applyGravity(float dt){
+        if(currentSpeedY >= -10.0f) {
+            currentSpeedY = currentSpeedY - 0.2f;
+        }
+        else if(currentSpeedY < -10.0f)
+            currentSpeedY = -10.0f;
+
+    }
+
+    public void move(float dt){
+        rect.setPosition(rect.getX()+currentSpeedX*dt,rect.getY()+currentSpeedY*dt);
+    }
+
     public float getX() {
         return x;
     }

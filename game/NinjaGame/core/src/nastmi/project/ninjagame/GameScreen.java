@@ -77,6 +77,8 @@ public class GameScreen implements Screen, InputProcessor {
         player.move(dt);
         player.applyGravity(dt);
         CollisionListener.checkCollision(player,arrOfCollisions,test,third);
+        camera.position.x = player.getRect().getX();
+        camera.position.y = player.getRect().getY();
         camera.update();
         renderer.setView(camera);
         renderer.render();

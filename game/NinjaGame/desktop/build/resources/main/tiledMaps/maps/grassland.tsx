@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tileset version="1.2" tiledversion="1.2.5" name="grassland" tilewidth="96" tileheight="96" tilecount="9" columns="0">
+<tileset version="1.2" tiledversion="2019.10.18" name="grassland" tilewidth="96" tileheight="96" tilecount="10" columns="0">
  <grid orientation="orthogonal" width="1" height="1"/>
  <tile id="0">
   <image width="48" height="48" source="../tiles/dirtMiddle.png"/>
@@ -27,5 +27,8 @@
  </tile>
  <tile id="8">
   <image width="48" height="48" source="../tiles/placeholderXGreen.png"/>
+ </tile>
+ <tile id="10">
+  <image width="48" height="48" source="../../trippyboi.png"/>
  </tile>
 </tileset>
