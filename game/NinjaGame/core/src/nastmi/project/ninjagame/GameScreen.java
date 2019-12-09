@@ -27,22 +27,22 @@ import java.util.Arrays;
 
 public class GameScreen implements Screen, InputProcessor {
     final MainGame game;
-    private OrthographicCamera  camera;
-    float GAME_WORLD_WIDTH;
-    float GAME_WORLD_HEIGHT;
+    private static OrthographicCamera  camera;
+    static float GAME_WORLD_WIDTH;
+    static float GAME_WORLD_HEIGHT;
     MapProperties prop;
     private Viewport viewport;
     TiledMap map;
     ObjectLayerRenderer renderer;
-    boolean rightPressed = false;
-    boolean leftPressed = false;
-    boolean upPressed = false;
-    boolean downPressed = false;
+    static boolean rightPressed = false;
+    static boolean leftPressed = false;
+    static boolean upPressed = false;
+    static boolean downPressed = false;
     public static boolean leftDisabled = false;
-    Player player;
+    static Player player;
     Player test;
     Player third;
-    CollisionListener Listener;    Rectangle rect;
+    CollisionListener Listener;
     ShapeRenderer renderShape;
     Array<Rectangle> arrOfCollisions;
 
@@ -52,7 +52,7 @@ public class GameScreen implements Screen, InputProcessor {
         arrOfCollisions = new Array<>();
         //Create camera, and link it to a viewport, so sizes of textures scale properly.
         camera = new OrthographicCamera();
-        viewport = new FitViewport(16,9,camera);
+        viewport = new FitViewport(19.2f,10.8f,camera);
         viewport.apply();
         camera.position.set(viewport.getWorldWidth()/2 ,viewport.getWorldHeight()/2,0);
         Gdx.input.setInputProcessor(this);
@@ -73,14 +73,13 @@ public class GameScreen implements Screen, InputProcessor {
 
     @Override
     public void render(float delta) {
+        camera.update();
+        changePlayerSpeed();
+        cameraFollow();
         float dt = Math.min(Gdx.graphics.getDeltaTime(), 1 / 60f);
-        System.out.println(dt);
         player.move(dt);
         player.applyGravity(dt);
         CollisionListener.checkCollision(player,arrOfCollisions,test,third);
-        camera.position.x = player.getRect().getX();
-        camera.position.y = player.getRect().getY();
-        camera.update();
         renderer.setView(camera);
         renderer.render();
         game.batch.begin();
@@ -88,14 +87,18 @@ public class GameScreen implements Screen, InputProcessor {
         drawPlayer(player,game.batch);
         drawPlayer(test,game.batch);
         game.batch.end();
+        debugRender(arrOfCollisions,renderShape,camera,player.getRect(),test.getRect(),third.getRect());
+    }
+
+    private static void changePlayerSpeed(){
         if(rightPressed) {
             player.setSpeed("right");
         }
-        if(leftPressed && !leftDisabled) {
+        if(leftPressed) {
             player.setSpeed("left");
         }
         if(upPressed){
-           // player.setSpeed("up");
+            //player.setSpeed("up");
         }
         if(downPressed) {
             player.setSpeed("down");
@@ -103,10 +106,16 @@ public class GameScreen implements Screen, InputProcessor {
         if(!rightPressed && !leftPressed){
             player.setSpeed("stop");
         }
-        debugRender(arrOfCollisions,renderShape,camera,player.getRect(),test.getRect(),third.getRect());
     }
-
-    public static void debugRender(Array<Rectangle> arr, ShapeRenderer renderShape, Camera camera, Rectangle... r){
+    private static void cameraFollow(){
+        if(player.getRect().getX()<camera.viewportWidth/2 || player.getRect().getX()>GAME_WORLD_WIDTH-camera.viewportWidth/2){}
+        else
+            camera.position.x = player.getRect().getX();
+        if(player.getRect().getY()<camera.viewportHeight/2 || player.getRect().getY()>GAME_WORLD_HEIGHT-camera.viewportHeight/2){}
+        else
+            camera.position.y = player.getRect().getY();
+    }
+    private static void debugRender(Array<Rectangle> arr, ShapeRenderer renderShape, Camera camera, Rectangle... r){
         for(Rectangle rect:arr){
             renderShape.setProjectionMatrix(camera.combined);
             renderShape.begin(ShapeRenderer.ShapeType.Line);
