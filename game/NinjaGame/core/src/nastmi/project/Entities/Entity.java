@@ -10,6 +10,8 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 public class Entity {
     float x;
     float y;
+    float oldX;
+    float oldY;
     float width;
     float height;
     float startSpeed;
@@ -27,6 +29,8 @@ public class Entity {
     }
 
     public void move(float dt){
+        oldX = rect.getX();
+        oldY = rect.getY();
         rect.setPosition(rect.getX()+currentSpeedX*dt,rect.getY()+currentSpeedY*dt);
     }
 
@@ -84,5 +88,29 @@ public class Entity {
 
     public void setRect(Rectangle rect) {
         this.rect = rect;
+    }
+
+    public float getOldX() {
+        return oldX;
+    }
+
+    public void setOldX(float oldX) {
+        this.oldX = oldX;
+    }
+
+    public float getOldY() {
+        return oldY;
+    }
+
+    public void setOldY(float oldY) {
+        this.oldY = oldY;
+    }
+
+    public float getStartSpeed() {
+        return startSpeed;
+    }
+
+    public void setStartSpeed(float startSpeed) {
+        this.startSpeed = startSpeed;
     }
 }

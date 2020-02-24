@@ -36,7 +36,6 @@ public class CollisionListener{
                         player.setCurrentSpeedY(0.0f);
                     }
                 }
-
             }
         }
         for(Player plr:p){

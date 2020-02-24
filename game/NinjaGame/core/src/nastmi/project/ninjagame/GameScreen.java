@@ -77,8 +77,8 @@ public class GameScreen implements Screen, InputProcessor {
         changePlayerSpeed();
         cameraFollow();
         float dt = Math.min(Gdx.graphics.getDeltaTime(), 1 / 60f);
-        player.move(dt);
         player.applyGravity(dt);
+        player.move(dt);
         CollisionListener.checkCollision(player,arrOfCollisions,test,third);
         renderer.setView(camera);
         renderer.render();
