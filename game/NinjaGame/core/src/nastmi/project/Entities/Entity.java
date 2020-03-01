@@ -1,5 +1,6 @@
 package nastmi.project.Entities;
 
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -8,16 +9,26 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 
 //Base class for entities. Should never actually be used on it's own, use subclasses instead, depending on the type of entity.
 public class Entity {
-    float x;
-    float y;
-    float oldX;
-    float oldY;
-    float width;
-    float height;
-    float startSpeed;
-    float currentSpeedX;
-    float currentSpeedY;
-    Rectangle rect;
+    private float x;
+    private float y;
+    private float oldX;
+    private float oldY;
+    private float width;
+    private float height;
+    private float startSpeed;
+    private float currentSpeedX;
+    private float currentSpeedY;
+    private Rectangle rect;
+
+    public Entity(int x, int y, float width, float height, float speed){
+        this.x = x;
+        this.y = y;
+        this.height = height;
+        this.width = width;
+        this.startSpeed = speed;
+        this.rect = new Rectangle();
+        this.rect.set(x,y,width,height);
+    }
 
     public void applyGravity(float dt){
         if(currentSpeedY >= -10.0f) {

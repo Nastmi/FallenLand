@@ -6,58 +6,41 @@ import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.physics.box2d.BodyDef.*;
 
 //Subclass of entity used for the main player.
-public class Player extends Entity{
-    int health;
+public class Player extends LiveEntity{
     Sprite sprite;
     int jumpCounter;
 
 
-    public Player(int x, int y, Sprite startSprite, float width, float height, float speed){
-        this.x = x;
-        this.y = y;
+    public Player(int x, int y, float width, float height, float speed,int health, Sprite startSprite){
+        super(x,y,width,height,speed,health);
         this.sprite = startSprite;
-        this.height = height;
-        this.width = width;
-        this.health = 20;
-        this.startSpeed = speed;
-        this.rect = new Rectangle();
-        this.rect.set(x,y,width,height);
     }
 
 
     public void setSpeed(String direction){
         switch (direction) {
             case "right":
-                if(currentSpeedX < 3.0f)
-                    currentSpeedX += startSpeed;
+                if(super.getCurrentSpeedX() < 3.0f)
+                    super.setCurrentSpeedX(super.getCurrentSpeedX()+super.getStartSpeed());
                 break;
             case "left":
-                if(currentSpeedX > -3.0f)
-                    currentSpeedX -= startSpeed;
+                if(super.getCurrentSpeedX() > -3.0f)
+                    super.setCurrentSpeedX(super.getCurrentSpeedX()-super.getStartSpeed());
                 break;
             case "up":
                 if(jumpCounter < 3) {
-                    currentSpeedY = 8;
+                    super.setCurrentSpeedY(8);
                     jumpCounter++;
                 }
                 break;
             case "stop":
-                currentSpeedX = 0;
+                super.setCurrentSpeedX(0);
                 break;
         }
     }
 
-
-    public int getHealth() {
-        return health;
-    }
-
     public Sprite getSprite() {
         return sprite;
-    }
-
-    public void setHealth(int health) {
-        this.health = health;
     }
 
     public void setSprite(Sprite sprite) {
@@ -70,5 +53,12 @@ public class Player extends Entity{
 
     public void setJumpCounter(int jumpCounter) {
         this.jumpCounter = jumpCounter;
+    }
+
+    public void applyDamage(int damage){
+        super.setHealth(super.getHealth()-damage);
+        if(super.getHealth() <= 0){
+            super.setDead(true);
+        }
     }
 }

@@ -38,7 +38,6 @@ public class GameScreen implements Screen, InputProcessor {
     static boolean leftPressed = false;
     static boolean upPressed = false;
     static boolean downPressed = false;
-    public static boolean leftDisabled = false;
     static Player player;
     Player test;
     Player third;
@@ -64,9 +63,9 @@ public class GameScreen implements Screen, InputProcessor {
         GAME_WORLD_HEIGHT = prop.get("height",Integer.class);
         //Create a world and build it's collisions.
         CollisionBuilder.objectLayerToBox2D(map,arrOfCollisions,1/48f);
-        player = new Player(10,7,new Sprite(new Texture("char.png")),1,1,3);
-        test = new Player(7,5,new Sprite(new Texture("enemy.png")),2,2,0);
-        third = new Player(13,5,new Sprite(new Texture("enemy.png")),2,2,0);
+        player = new Player(10,7,1,1,3,new Sprite(new Texture("char.png")));
+        test = new Player(7,5,2,2,0,new Sprite(new Texture("enemy.png")));
+        third = new Player(13,5,2,2,0,new Sprite(new Texture("enemy.png")));
         renderShape = new ShapeRenderer();
     }
 
