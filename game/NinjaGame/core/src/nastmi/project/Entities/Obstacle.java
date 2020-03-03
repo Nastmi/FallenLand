@@ -1,11 +1,13 @@
 package nastmi.project.Entities;
 
+import com.badlogic.gdx.graphics.g2d.Sprite;
+
 public class Obstacle extends Entity{
 
     private int damage;
 
-    public Obstacle(int x, int y, float width, float height, float speed, int damage) {
-        super(x, y, width, height, speed);
+    public Obstacle(int x, int y, float width, float height, float speed, Sprite startSprite, int damage) {
+        super(x, y, width, height, speed,startSprite);
         this.damage = damage;
     }
 }

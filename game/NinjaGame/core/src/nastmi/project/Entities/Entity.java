@@ -19,8 +19,9 @@ public class Entity {
     private float currentSpeedX;
     private float currentSpeedY;
     private Rectangle rect;
+    private Sprite sprite;
 
-    public Entity(int x, int y, float width, float height, float speed){
+    public Entity(int x, int y, float width, float height, float speed, Sprite startSprite){
         this.x = x;
         this.y = y;
         this.height = height;
@@ -28,6 +29,7 @@ public class Entity {
         this.startSpeed = speed;
         this.rect = new Rectangle();
         this.rect.set(x,y,width,height);
+        this.sprite = startSprite;
     }
 
     public void applyGravity(float dt){
@@ -123,5 +125,13 @@ public class Entity {
 
     public void setStartSpeed(float startSpeed) {
         this.startSpeed = startSpeed;
+    }
+
+    public Sprite getSprite() {
+        return sprite;
+    }
+
+    public void setSprite(Sprite sprite) {
+        this.sprite = sprite;
     }
 }

@@ -7,13 +7,11 @@ import com.badlogic.gdx.physics.box2d.BodyDef.*;
 
 //Subclass of entity used for the main player.
 public class Player extends LiveEntity{
-    Sprite sprite;
-    int jumpCounter;
+    private int jumpCounter;
 
 
     public Player(int x, int y, float width, float height, float speed,int health, Sprite startSprite){
-        super(x,y,width,height,speed,health);
-        this.sprite = startSprite;
+        super(x,y,width,height,speed,health,startSprite);
     }
 
 
@@ -39,14 +37,6 @@ public class Player extends LiveEntity{
         }
     }
 
-    public Sprite getSprite() {
-        return sprite;
-    }
-
-    public void setSprite(Sprite sprite) {
-        this.sprite = sprite;
-    }
-
     public int getJumpCounter() {
         return jumpCounter;
     }
@@ -55,10 +45,5 @@ public class Player extends LiveEntity{
         this.jumpCounter = jumpCounter;
     }
 
-    public void applyDamage(int damage){
-        super.setHealth(super.getHealth()-damage);
-        if(super.getHealth() <= 0){
-            super.setDead(true);
-        }
-    }
+
 }

@@ -18,6 +18,7 @@ import com.badlogic.gdx.physics.box2d.BodyDef.*;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import nastmi.project.Entities.Obstacle;
 import nastmi.project.Entities.Player;
 import nastmi.project.utilities.CollisionBuilder;
 import nastmi.project.utilities.CollisionListener;
@@ -41,6 +42,7 @@ public class GameScreen implements Screen, InputProcessor {
     static Player player;
     Player test;
     Player third;
+    Obstacle spike;
     CollisionListener Listener;
     ShapeRenderer renderShape;
     Array<Rectangle> arrOfCollisions;
@@ -63,9 +65,10 @@ public class GameScreen implements Screen, InputProcessor {
         GAME_WORLD_HEIGHT = prop.get("height",Integer.class);
         //Create a world and build it's collisions.
         CollisionBuilder.objectLayerToBox2D(map,arrOfCollisions,1/48f);
-        player = new Player(10,7,1,1,3,new Sprite(new Texture("char.png")));
-        test = new Player(7,5,2,2,0,new Sprite(new Texture("enemy.png")));
-        third = new Player(13,5,2,2,0,new Sprite(new Texture("enemy.png")));
+        player = new Player(10,7,0.5f,1,3,20,new Sprite(new Texture("charIdle.png")));
+        test = new Player(7,5,2,2,0,1,new Sprite(new Texture("enemy.png")));
+        third = new Player(13,5,2,2,0,1,new Sprite(new Texture("enemy.png")));
+        spike = new Obstacle(5,5,1,1,0,new Sprite(new Texture("trippyboi.png")),10);
         renderShape = new ShapeRenderer();
     }
 
@@ -85,6 +88,7 @@ public class GameScreen implements Screen, InputProcessor {
         game.batch.setProjectionMatrix(camera.combined);
         drawPlayer(player,game.batch);
         drawPlayer(test,game.batch);
+        drawObstacle(spike,game.batch);
         game.batch.end();
         debugRender(arrOfCollisions,renderShape,camera,player.getRect(),test.getRect(),third.getRect());
     }
@@ -165,6 +169,10 @@ public class GameScreen implements Screen, InputProcessor {
 
     public static void drawPlayer(Player playerToDraw, Batch batch){
         batch.draw(playerToDraw.getSprite().getTexture(),playerToDraw.getRect().getX(),playerToDraw.getRect().getY(),playerToDraw.getWidth(),playerToDraw.getHeight());
+    }
+
+    public static void drawObstacle(Obstacle o, Batch batch){
+        batch.draw(o.getSprite().getTexture(),o.getRect().getX(),o.getRect().getY(),o.getWidth(),o.getHeight());
     }
 
     @Override
