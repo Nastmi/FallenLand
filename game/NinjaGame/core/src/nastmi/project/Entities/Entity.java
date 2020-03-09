@@ -21,6 +21,10 @@ public class Entity {
     private Rectangle rect;
     private Sprite sprite;
 
+    public Entity(){
+
+    }
+
     public Entity(int x, int y, float width, float height, float speed, Sprite startSprite){
         this.x = x;
         this.y = y;
@@ -41,10 +45,12 @@ public class Entity {
 
     }
 
-    public void move(float dt){
-        oldX = rect.getX();
-        oldY = rect.getY();
-        rect.setPosition(rect.getX()+currentSpeedX*dt,rect.getY()+currentSpeedY*dt);
+    public void moveX(float dt){
+        rect.setPosition(rect.getX()+currentSpeedX*dt,rect.getY());
+    }
+
+    public void moveY(float dt){
+        rect.setPosition(rect.getX(),rect.getY()+currentSpeedY*dt);
     }
 
     public float getX() {

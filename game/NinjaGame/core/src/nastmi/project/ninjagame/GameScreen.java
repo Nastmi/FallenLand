@@ -46,11 +46,12 @@ public class GameScreen implements Screen, InputProcessor {
     CollisionListener Listener;
     ShapeRenderer renderShape;
     Array<Rectangle> arrOfCollisions;
-
+    Array<Object> sourcesOfDamage;
 
     public GameScreen(final MainGame game){
         this.game=game;
         arrOfCollisions = new Array<>();
+        sourcesOfDamage = new Array<>();
         //Create camera, and link it to a viewport, so sizes of textures scale properly.
         camera = new OrthographicCamera();
         viewport = new FitViewport(19.2f,10.8f,camera);
@@ -67,8 +68,9 @@ public class GameScreen implements Screen, InputProcessor {
         CollisionBuilder.objectLayerToBox2D(map,arrOfCollisions,1/48f);
         player = new Player(10,7,0.5f,1,3,20,new Sprite(new Texture("charIdle.png")));
         test = new Player(7,5,2,2,0,1,new Sprite(new Texture("enemy.png")));
-        third = new Player(13,5,2,2,0,1,new Sprite(new Texture("enemy.png")));
-        spike = new Obstacle(5,5,1,1,0,new Sprite(new Texture("trippyboi.png")),10);
+        third = new Player(7,13,2,2,0,1,new Sprite(new Texture("enemy.png")));
+        spike = new Obstacle(5,5,0.5f,0.5f,0,new Sprite(new Texture("obstacle.gif")),2);
+        sourcesOfDamage.add(spike);
         renderShape = new ShapeRenderer();
     }
 
@@ -80,8 +82,12 @@ public class GameScreen implements Screen, InputProcessor {
         cameraFollow();
         float dt = Math.min(Gdx.graphics.getDeltaTime(), 1 / 60f);
         player.applyGravity(dt);
-        player.move(dt);
-        CollisionListener.checkCollision(player,arrOfCollisions,test,third);
+        player.moveX(dt);
+        CollisionListener.checkCollision(player,arrOfCollisions,"x",test,third);
+        player.moveY(dt);
+        CollisionListener.checkCollision(player,arrOfCollisions,"y",test,third);
+        player.frameUp();
+        CollisionListener.checkForDamage(sourcesOfDamage,player);
         renderer.setView(camera);
         renderer.render();
         game.batch.begin();

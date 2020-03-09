@@ -3,13 +3,12 @@ package nastmi.project.Entities;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 
-import javax.xml.soap.Text;
 
 public class LiveEntity extends Entity {
 
-    int health;
+    private int health;
     private boolean isDead = false;
-    private Texture spritSheet;
+    private Texture spriteSheet;
 
     public LiveEntity(int x, int y, float width, float height, float speed, int health, Sprite startSprite) {
         super(x, y, width, height, speed, startSprite);
@@ -32,7 +31,7 @@ public class LiveEntity extends Entity {
         isDead = dead;
     }
 
-    public void applyDamage(int damage){
+    public void reactToDamage(int damage){
         health = health - damage;
         if(health <= 0){
             isDead = true;
