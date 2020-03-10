@@ -54,7 +54,7 @@ public class GameScreen implements Screen, InputProcessor {
         sourcesOfDamage = new Array<>();
         //Create camera, and link it to a viewport, so sizes of textures scale properly.
         camera = new OrthographicCamera();
-        viewport = new FitViewport(19.2f,10.8f,camera);
+        viewport = new FitViewport(14.4f,8.1f,camera);
         viewport.apply();
         camera.position.set(viewport.getWorldWidth()/2 ,viewport.getWorldHeight()/2,0);
         Gdx.input.setInputProcessor(this);
