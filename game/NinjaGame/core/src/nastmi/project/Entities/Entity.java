@@ -1,18 +1,21 @@
 package nastmi.project.Entities;
 
+import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.badlogic.gdx.utils.Array;
 
 //Base class for entities. Should never actually be used on it's own, use subclasses instead, depending on the type of entity.
 public class Entity {
     private float x;
     private float y;
-    private float oldX;
-    private float oldY;
     private float width;
     private float height;
     private float startSpeed;
@@ -24,8 +27,8 @@ public class Entity {
     public Entity(){
 
     }
-
-    public Entity(int x, int y, float width, float height, float speed, Sprite startSprite){
+    
+    public Entity(float x, float y, float width, float height, float speed, Sprite startSprite){
         this.x = x;
         this.y = y;
         this.height = height;
@@ -36,13 +39,24 @@ public class Entity {
         this.sprite = startSprite;
     }
 
-    public void applyGravity(float dt){
-        if(currentSpeedY >= -10.0f) {
-            currentSpeedY = currentSpeedY - 0.2f;
-        }
-        else if(currentSpeedY < -10.0f)
-            currentSpeedY = -10.0f;
+    public void draw(SpriteBatch batch){
+        batch.draw(this.getSprite().getTexture(),this.getRect().getX(),this.getRect().getY(),this.getWidth(),this.getHeight());
+    }
 
+    public void debugRender(Array<Rectangle> arr, ShapeRenderer renderShape, Camera camera, Rectangle... r){
+        renderShape.setProjectionMatrix(camera.combined);
+        renderShape.begin(ShapeRenderer.ShapeType.Line);
+        renderShape.setColor(Color.BLUE);
+        renderShape.rect(rect.x, rect.y, rect.width, rect.height);
+        renderShape.end();
+    }
+    
+    public void applyGravity(float dt, float gravity,float maxYSpeed){
+        if(currentSpeedY >= -maxYSpeed) {
+            currentSpeedY = currentSpeedY - gravity;
+        }
+        else if(currentSpeedY < -maxYSpeed)
+            currentSpeedY = -maxYSpeed;
     }
 
     public void moveX(float dt){
@@ -109,21 +123,6 @@ public class Entity {
         this.rect = rect;
     }
 
-    public float getOldX() {
-        return oldX;
-    }
-
-    public void setOldX(float oldX) {
-        this.oldX = oldX;
-    }
-
-    public float getOldY() {
-        return oldY;
-    }
-
-    public void setOldY(float oldY) {
-        this.oldY = oldY;
-    }
 
     public float getStartSpeed() {
         return startSpeed;

@@ -10,7 +10,7 @@ public class LiveEntity extends Entity {
     private boolean isDead = false;
     private Texture spriteSheet;
 
-    public LiveEntity(int x, int y, float width, float height, float speed, int health, Sprite startSprite) {
+    public LiveEntity(float x, float y, float width, float height, float speed, int health, Sprite startSprite) {
         super(x, y, width, height, speed, startSprite);
         this.health = health;
     }

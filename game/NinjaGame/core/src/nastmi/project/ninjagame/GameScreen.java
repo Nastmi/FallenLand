@@ -1,36 +1,37 @@
 package nastmi.project.ninjagame;
 
 import com.badlogic.gdx.*;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.maps.MapLayer;
+import com.badlogic.gdx.maps.MapObject;
+import com.badlogic.gdx.maps.MapObjects;
 import com.badlogic.gdx.maps.MapProperties;
+import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.*;
-import com.badlogic.gdx.physics.box2d.BodyDef.*;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import nastmi.project.Entities.Obstacle;
+import nastmi.project.Entities.Bullet;
+import nastmi.project.Entities.Enemy;
 import nastmi.project.Entities.Player;
-import nastmi.project.utilities.CollisionBuilder;
-import nastmi.project.utilities.CollisionListener;
-import nastmi.project.utilities.ObjectLayerRenderer;
-
-import java.util.Arrays;
+import nastmi.project.utilities.*;
 
 public class GameScreen implements Screen, InputProcessor {
     final MainGame game;
     private static OrthographicCamera  camera;
     static float GAME_WORLD_WIDTH;
     static float GAME_WORLD_HEIGHT;
+    static final float gravity = 0.3f;
+    static final float maxYSpeed = 10.0f;
     MapProperties prop;
     private Viewport viewport;
     TiledMap map;
@@ -39,67 +40,152 @@ public class GameScreen implements Screen, InputProcessor {
     static boolean leftPressed = false;
     static boolean upPressed = false;
     static boolean downPressed = false;
+    static boolean yPressed = false;
+    public boolean shooting = false;
     static Player player;
-    Player test;
-    Player third;
-    Obstacle spike;
-    CollisionListener Listener;
     ShapeRenderer renderShape;
     Array<Rectangle> arrOfCollisions;
-    Array<Object> sourcesOfDamage;
+    Array<Enemy> arrEnemies;
+    Array<Bullet> friendlyBullets;
+    Array<Bullet> enemyBullets;
+    MapObjects enemyObjects;
+    Sound enemyDeath;
 
     public GameScreen(final MainGame game){
+        Sounds.levelTheme.play();
+        Sounds.levelTheme.setVolume(Globals.musicVolume);
         this.game=game;
         arrOfCollisions = new Array<>();
-        sourcesOfDamage = new Array<>();
+        arrEnemies  = new Array<>();
+        friendlyBullets = new Array<>();
+        enemyBullets = new Array<>();
         //Create camera, and link it to a viewport, so sizes of textures scale properly.
         camera = new OrthographicCamera();
         viewport = new FitViewport(14.4f,8.1f,camera);
+        //viewport = new FitViewport(16.0f,9.0f,camera);
         viewport.apply();
         camera.position.set(viewport.getWorldWidth()/2 ,viewport.getWorldHeight()/2,0);
         Gdx.input.setInputProcessor(this);
         //Load and render map
-        map = new TmxMapLoader().load("tiledMaps/maps/grassland_1_1.tmx");
-        renderer = new ObjectLayerRenderer(map,1/48f);
+        map = new TmxMapLoader().load("tiledMaps/maps/level1.tmx");
+        renderer = new ObjectLayerRenderer(map,1/32f);
         prop = map.getProperties();
         GAME_WORLD_WIDTH = prop.get("width",Integer.class);
         GAME_WORLD_HEIGHT = prop.get("height",Integer.class);
         //Create a world and build it's collisions.
-        CollisionBuilder.objectLayerToBox2D(map,arrOfCollisions,1/48f);
-        player = new Player(10,7,0.5f,1,3,20,new Sprite(new Texture("charIdle.png")));
-        test = new Player(7,5,2,2,0,1,new Sprite(new Texture("enemy.png")));
-        third = new Player(7,13,2,2,0,1,new Sprite(new Texture("enemy.png")));
-        spike = new Obstacle(5,5,0.5f,0.5f,0,new Sprite(new Texture("obstacle.gif")),2);
-        sourcesOfDamage.add(spike);
+        CollisionBuilder.objectLayerToBox2D(map,arrOfCollisions,1/32f);
+        MapLayer temp = map.getLayers().get("otherLayer");
+        MapObjects tempO = temp.getObjects();
+        RectangleMapObject o = (RectangleMapObject) tempO.get(0);
+        player = new Player(o.getRectangle().getX()*1/32f,o.getRectangle().getY()*1/32f,0.75f,1f,2.5f,20,new Sprite(new Texture("enemy.png")),new Texture(Gdx.files.internal("player/charIdle.png")),2,0.2f);
         renderShape = new ShapeRenderer();
+        enemyObjects = EnemySpawner.addEnemies(map);
     }
 
 
     @Override
     public void render(float delta) {
-        camera.update();
-        changePlayerSpeed();
-        cameraFollow();
         float dt = Math.min(Gdx.graphics.getDeltaTime(), 1 / 60f);
-        player.applyGravity(dt);
-        player.moveX(dt);
-        CollisionListener.checkCollision(player,arrOfCollisions,"x",test,third);
-        player.moveY(dt);
-        CollisionListener.checkCollision(player,arrOfCollisions,"y",test,third);
+        camera.update();
+        changeSpeed();
+        cameraFollow();
+        player.applyGravity(dt,gravity,maxYSpeed);
+        moveCollisionAll(dt);
         player.frameUp();
-        CollisionListener.checkForDamage(sourcesOfDamage,player);
+        player.setDir(rightPressed,leftPressed,upPressed,downPressed);
+        player.createAnimation();
+        CollisionListener.checkForDamage(friendlyBullets,enemyBullets,arrEnemies,player);
         renderer.setView(camera);
         renderer.render();
         game.batch.begin();
         game.batch.setProjectionMatrix(camera.combined);
-        drawPlayer(player,game.batch);
-        drawPlayer(test,game.batch);
-        drawObstacle(spike,game.batch);
+        drawAll(game.batch);
+        shootAll();
         game.batch.end();
-        debugRender(arrOfCollisions,renderShape,camera,player.getRect(),test.getRect(),third.getRect());
+        removeDeadEnemies();
+        EnemySpawner.spawnEnemies(enemyObjects,arrEnemies,player,1/32f);
+        if(player.isDead()){
+          /*  MapLayer temp = map.getLayers().get("otherLayer");
+            MapObjects tempO = temp.getObjects();
+            RectangleMapObject o = (RectangleMapObject) tempO.get(0);
+            player.getRect().setX(o.getRectangle().getX()*1/32f);
+            player.getRect().setY(o.getRectangle().getY()*1/32f);
+            player.setX(o.getRectangle().getX()*1/32f);
+            player.setDead(false);
+            player.setHealth(20);
+            Sounds.playerDeath.play(Globals.soundVolume);
+            arrEnemies.clear();
+            enemyObjects = EnemySpawner.addEnemies(map);*/
+            game.setScreen(new GameScreen(game));
+            dispose();
+        }
+       // debugRender(arrOfCollisions,renderShape,camera,player.getRect(),test.getRect(),third.getRect());
     }
 
-    private static void changePlayerSpeed(){
+
+    private  void shootAll(){
+        Bullet[] temp = player.shoot(rightPressed,leftPressed,upPressed,downPressed,shooting);
+        if(temp != null)
+            friendlyBullets.addAll(temp);
+        for(Enemy e:arrEnemies){
+            Bullet[] temp2 = e.shoot();
+            if(temp2 != null){
+                enemyBullets.addAll(temp2);
+            }
+        }
+    }
+
+    private void removeDeadEnemies(){
+        for(Enemy e:arrEnemies){
+            e.framesUp();
+            if (e.getHealth() <= 0){
+                arrEnemies.removeValue(e,false);
+                Sounds.enemyDeath.play(Globals.soundVolume);
+            }
+            else if(player.getRect().getX()-e.getRect().getX() > 20){
+                arrEnemies.removeValue(e,false);
+            }
+        }
+    }
+
+    private void moveCollisionAll(float dt){
+        player.moveX(dt);
+        for(Enemy e:arrEnemies){
+            e.moveX(dt);
+        }
+        Array<Bullet> temp = new Array<>(friendlyBullets);
+        CollisionListener.checkCollision(player,arrOfCollisions,"x",arrEnemies,friendlyBullets,enemyBullets);
+        player.moveY(dt);
+        for(Enemy e:arrEnemies){
+            e.moveY(dt);
+            e.applyGravity(dt,gravity,maxYSpeed);
+        }
+        for(Bullet b:friendlyBullets){
+            b.moveX(dt);
+            b.moveY(dt);
+        }
+        for(Bullet b:enemyBullets){
+            b.moveX(dt);
+            b.moveY(dt);
+        }
+        CollisionListener.checkCollision(player,arrOfCollisions,"y",arrEnemies,friendlyBullets,enemyBullets);
+    }
+
+
+    public void drawAll(SpriteBatch batch){
+        player.draw(batch);
+        for(Enemy e:arrEnemies){
+            e.draw(batch);
+        }
+        for(Bullet b:friendlyBullets){
+            b.draw(batch);
+        }
+        for(Bullet b:enemyBullets){
+            b.draw(batch);
+        }
+    }
+
+    private void changeSpeed(){
         if(rightPressed) {
             player.setSpeed("right");
         }
@@ -112,8 +198,11 @@ public class GameScreen implements Screen, InputProcessor {
         if(downPressed) {
             player.setSpeed("down");
         }
-        if(!rightPressed && !leftPressed){
+        /*if(!rightPressed && !leftPressed){
             player.setSpeed("stop");
+        }*/
+        for(Enemy e:arrEnemies){
+            e.calculateNextSpeed();
         }
     }
     private static void cameraFollow(){
@@ -136,9 +225,10 @@ public class GameScreen implements Screen, InputProcessor {
             renderShape.setProjectionMatrix(camera.combined);
             renderShape.begin(ShapeRenderer.ShapeType.Line);
             renderShape.setColor(Color.BLUE);
-            renderShape.rect(rect.x, rect.y, rect.width, rect.height);
+            renderShape.rect(rect.getX(), rect.getY(), rect.width, rect.height);
             renderShape.end();
         }
+
     }
 
     @Override
@@ -173,28 +263,31 @@ public class GameScreen implements Screen, InputProcessor {
 
     }
 
-    public static void drawPlayer(Player playerToDraw, Batch batch){
-        batch.draw(playerToDraw.getSprite().getTexture(),playerToDraw.getRect().getX(),playerToDraw.getRect().getY(),playerToDraw.getWidth(),playerToDraw.getHeight());
-    }
-
-    public static void drawObstacle(Obstacle o, Batch batch){
-        batch.draw(o.getSprite().getTexture(),o.getRect().getX(),o.getRect().getY(),o.getWidth(),o.getHeight());
-    }
-
     @Override
     public boolean keyDown(int keycode) {
         if(keycode == Input.Keys.LEFT){
+            player.setLastDir("none");
             leftPressed = true;
         }
         if(keycode == Input.Keys.RIGHT){
+            player.setLastDir("none");
             rightPressed = true;
         }
-        if(keycode == Input.Keys.UP){
-            upPressed = true;
+        if(keycode == Input.Keys.Y){
+            yPressed = true;
             player.setSpeed("up");
         }
         if(keycode == Input.Keys.DOWN){
             downPressed = true;
+        }
+        if(keycode == Input.Keys.UP){
+            upPressed = true;
+        }
+        if(keycode == Input.Keys.X){
+            shooting = true;
+        }
+        if(keycode == Input.Keys.ESCAPE){
+            Gdx.app.exit();
         }
         return false;
     }
@@ -203,10 +296,14 @@ public class GameScreen implements Screen, InputProcessor {
     public boolean keyUp(int keycode) {
         if(keycode == Input.Keys.LEFT){
             leftPressed = false;
+            if(!rightPressed)
+                player.setLastDir("left");
             player.setSpeed("stop");
         }
         if(keycode == Input.Keys.RIGHT){
             rightPressed = false;
+            if(!leftPressed)
+                player.setLastDir("right");
             player.setSpeed("stop");
         }
         if(keycode == Input.Keys.UP){
@@ -214,6 +311,9 @@ public class GameScreen implements Screen, InputProcessor {
         }
         if(keycode == Input.Keys.DOWN){
             downPressed = false;
+        }
+        if(keycode == Input.Keys.X){
+            shooting = false;
         }
         return false;
     }

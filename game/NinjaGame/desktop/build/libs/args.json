@@ -1,0 +1,15 @@
+{
+    "platform": "windows64",
+    "jdk": "C:/Program Files/Java/jdk1.8.0_151",
+    "executable": "Fallen Land",
+    "classpath": [
+        "fallenland.jar"
+    ],
+    "mainclass": "nastmi.project.ninjagame.desktop.DesktopLauncher",
+    "vmargs": [
+       "Xmx1G"
+    ],
+    "minimizejre": "soft",
+    "output": "C:/Users/natan/Desktop/Fallen Land",
+	"verbose" : true
+}
