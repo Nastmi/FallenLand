@@ -26,6 +26,7 @@ public class MenuScreen implements Screen, InputProcessor {
     Rectangle infoButton;
     ShapeRenderer renderer;
     Texture menu;
+    Rectangle exitButton;
 
     public MenuScreen(final MainGame game){
         this.game = game;
@@ -38,10 +39,11 @@ public class MenuScreen implements Screen, InputProcessor {
         playButton = new Rectangle(48,51,46,18);
         optionButton = new Rectangle(48,28,46,18);
         infoButton = new Rectangle(48,5,46,18);
+        exitButton = new Rectangle(100,63,14,12);
         menu = new Texture(Gdx.files.internal("menus/menu.png"));
         Sounds.menuTheme.play();
         Sounds.menuTheme.setVolume(Globals.musicVolume);
-
+        Sounds.menuTheme.setLooping(true);
     }
 
     @Override
@@ -51,7 +53,7 @@ public class MenuScreen implements Screen, InputProcessor {
         game.batch.setProjectionMatrix(camera.combined);
         game.batch.draw(menu,0,0,144,81);
         game.batch.end();
-        //testRender(playButton,optionButton,infoButton);
+        //testRender(exitButton);
     }
 
     public void testRender(Rectangle ... arrRect){
@@ -112,7 +114,7 @@ public class MenuScreen implements Screen, InputProcessor {
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         Vector3 mousePos = new Vector3(screenX,screenY,0);
-        camera.unproject(mousePos);
+        viewport.unproject(mousePos);
         if(playButton.contains(mousePos.x,mousePos.y)){
             game.setScreen(new Tutorial(game));
             dispose();
@@ -123,6 +125,10 @@ public class MenuScreen implements Screen, InputProcessor {
         }
         else if(infoButton.contains(mousePos.x,mousePos.y)){
             game.setScreen(new CreditScreen(game));
+            dispose();
+        }
+        else if(exitButton.contains(mousePos.x,mousePos.y)){
+            System.exit(0);
             dispose();
         }
 

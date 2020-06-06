@@ -16,6 +16,9 @@ public class Sounds {
     public static Sound playerJump = Gdx.audio.newSound(Gdx.files.internal("sound/playerJump.wav"));
     public static Music menuTheme = Gdx.audio.newMusic(Gdx.files.internal("music/menuMusic.mp3"));
     public static Music levelTheme = Gdx.audio.newMusic(Gdx.files.internal("music/levelMusic.mp3"));
+
+
+
 }
 
 

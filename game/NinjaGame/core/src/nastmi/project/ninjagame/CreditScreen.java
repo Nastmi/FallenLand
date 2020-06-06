@@ -31,7 +31,7 @@ public class CreditScreen implements Screen, InputProcessor {
         camera.position.set(viewport.getWorldWidth()/2 ,viewport.getWorldHeight()/2,0);
         renderer = new ShapeRenderer();
         menu = new Texture(Gdx.files.internal("menus/credits.png"));
-        backButton = new Rectangle(35,4,23,11);
+        backButton = new Rectangle(4,63,13,12);
     }
 
     @Override
@@ -102,7 +102,7 @@ public class CreditScreen implements Screen, InputProcessor {
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         Vector3 mousePos = new Vector3(screenX,screenY,0);
-        camera.unproject(mousePos);
+        viewport.unproject(mousePos);
         if(backButton.contains(mousePos.x,mousePos.y)){
             game.setScreen(new MenuScreen(game));
             dispose();

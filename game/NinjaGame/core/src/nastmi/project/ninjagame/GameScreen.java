@@ -50,10 +50,13 @@ public class GameScreen implements Screen, InputProcessor {
     Array<Bullet> enemyBullets;
     MapObjects enemyObjects;
     Sound enemyDeath;
+    private boolean paused = false;
+    Texture pauseMenu;
 
     public GameScreen(final MainGame game){
         Sounds.levelTheme.play();
         Sounds.levelTheme.setVolume(Globals.musicVolume);
+        Sounds.levelTheme.setLooping(true);
         this.game=game;
         arrOfCollisions = new Array<>();
         arrEnemies  = new Array<>();
@@ -80,45 +83,41 @@ public class GameScreen implements Screen, InputProcessor {
         player = new Player(o.getRectangle().getX()*1/32f,o.getRectangle().getY()*1/32f,0.75f,1f,2.5f,20,new Sprite(new Texture("enemy.png")),new Texture(Gdx.files.internal("player/charIdle.png")),2,0.2f);
         renderShape = new ShapeRenderer();
         enemyObjects = EnemySpawner.addEnemies(map);
+        pauseMenu = new Texture(Gdx.files.internal("menus/pauseMenu.png"));
     }
 
 
     @Override
     public void render(float delta) {
-        float dt = Math.min(Gdx.graphics.getDeltaTime(), 1 / 60f);
         camera.update();
-        changeSpeed();
-        cameraFollow();
-        player.applyGravity(dt,gravity,maxYSpeed);
-        moveCollisionAll(dt);
-        player.frameUp();
-        player.setDir(rightPressed,leftPressed,upPressed,downPressed);
-        player.createAnimation();
-        CollisionListener.checkForDamage(friendlyBullets,enemyBullets,arrEnemies,player);
+        float dt = Math.min(Gdx.graphics.getDeltaTime(), 1 / 60f);
+        if(!paused){
+            changeSpeed();
+            cameraFollow();
+            player.applyGravity(dt,gravity,maxYSpeed);
+            moveCollisionAll(dt);
+            player.frameUp();
+            player.setDir(rightPressed,leftPressed,upPressed,downPressed);
+            player.createAnimation();
+            CollisionListener.checkForDamage(friendlyBullets,enemyBullets,arrEnemies,player);
+            removeDeadEnemies();
+            EnemySpawner.spawnEnemies(enemyObjects,arrEnemies,player,1/32f);
+            if(player.isDead()){
+                Sounds.playerDeath.play(Globals.soundVolume);
+                game.setScreen(new GameScreen(game));
+                dispose();
+            }
+        }
         renderer.setView(camera);
         renderer.render();
         game.batch.begin();
         game.batch.setProjectionMatrix(camera.combined);
         drawAll(game.batch);
         shootAll();
-        game.batch.end();
-        removeDeadEnemies();
-        EnemySpawner.spawnEnemies(enemyObjects,arrEnemies,player,1/32f);
-        if(player.isDead()){
-          /*  MapLayer temp = map.getLayers().get("otherLayer");
-            MapObjects tempO = temp.getObjects();
-            RectangleMapObject o = (RectangleMapObject) tempO.get(0);
-            player.getRect().setX(o.getRectangle().getX()*1/32f);
-            player.getRect().setY(o.getRectangle().getY()*1/32f);
-            player.setX(o.getRectangle().getX()*1/32f);
-            player.setDead(false);
-            player.setHealth(20);
-            Sounds.playerDeath.play(Globals.soundVolume);
-            arrEnemies.clear();
-            enemyObjects = EnemySpawner.addEnemies(map);*/
-            game.setScreen(new GameScreen(game));
-            dispose();
+        if(paused){
+            game.batch.draw(pauseMenu,camera.position.x-2f,camera.position.y-2f,4f,4f);
         }
+        game.batch.end();
        // debugRender(arrOfCollisions,renderShape,camera,player.getRect(),test.getRect(),third.getRect());
     }
 
@@ -287,7 +286,7 @@ public class GameScreen implements Screen, InputProcessor {
             shooting = true;
         }
         if(keycode == Input.Keys.ESCAPE){
-            Gdx.app.exit();
+            paused = !paused;
         }
         return false;
     }
