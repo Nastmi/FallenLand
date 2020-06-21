@@ -44,27 +44,46 @@ public class Player extends LiveEntity{
 
 
     public void createAnimation(){
-        int fileDir = Math.abs(dir);
-        spriteSheet = new Texture(Gdx.files.internal("player/char"+fileDir+".png"));
-        if(((lastDir.equals("left") || lastDir.equals("right"))) && dir != 0 && dir!= 4){
-            spriteSheet = new Texture(Gdx.files.internal("player/charIdle.png"));
-        }
-        TextureRegion[][] tmp = TextureRegion.split(spriteSheet,spriteSheet.getWidth()/length,spriteSheet.getHeight()/1);
-        animFrames = new TextureRegion[length];
-        int idx = 0;
-        for(int i=0;i<1;i++){
-            for(int j=0;j<length;j++){
-                animFrames[idx++] = tmp[i][j];
+        if(isDead()){
+            spriteSheet = new Texture(Gdx.files.internal("player/charDeath.png"));
+            TextureRegion[][] tmp = TextureRegion.split(spriteSheet,spriteSheet.getWidth()/7,spriteSheet.getHeight()/1);
+            animFrames = new TextureRegion[7];
+            int idx = 0;
+            for(int i=0;i<1;i++){
+                for(int j=0;j<7;j++){
+                    animFrames[idx++] = tmp[i][j];
+                }
+            }
+            animation = new Animation<TextureRegion>(frameTime,animFrames);
+            if(elapsedTime > 10){
+                elapsedTime = 0;
             }
         }
-        animation = new Animation<TextureRegion>(frameTime,animFrames);
-        if(dir < 0 || ((dir == 0 || dir == 4) && lastDir == "left")){
-            for(TextureRegion t:animation.getKeyFrames()){
-                t.flip(true,false);
+        else{
+            int fileDir = Math.abs(dir);
+            spriteSheet = new Texture(Gdx.files.internal("player/char"+fileDir+".png"));
+            if(((lastDir.equals("left") || lastDir.equals("right"))) && dir != 0 && dir!= 4){
+                spriteSheet = new Texture(Gdx.files.internal("player/charIdle.png"));
+            }
+            TextureRegion[][] tmp = TextureRegion.split(spriteSheet,spriteSheet.getWidth()/length,spriteSheet.getHeight()/1);
+            animFrames = new TextureRegion[length];
+            int idx = 0;
+            for(int i=0;i<1;i++){
+                for(int j=0;j<length;j++){
+                    animFrames[idx++] = tmp[i][j];
+                }
+            }
+            animation = new Animation<TextureRegion>(frameTime,animFrames);
+            if(dir < 0 || ((dir == 0 || dir == 4) && lastDir == "left")){
+                for(TextureRegion t:animation.getKeyFrames()){
+                    t.flip(true,false);
 
+                }
             }
         }
     }
+
+
 
     @Override
     public void moveX(float dt){
@@ -75,12 +94,20 @@ public class Player extends LiveEntity{
     @Override
     public void draw(SpriteBatch batch){
         elapsedTime+= Gdx.graphics.getDeltaTime();
-        TextureRegion currentFrame = animation.getKeyFrame(elapsedTime,true);
+        TextureRegion currentFrame;
+        if(isDead()){
+            currentFrame = animation.getKeyFrame(elapsedTime,false);
+        }
+        else{
+            currentFrame = animation.getKeyFrame(elapsedTime,true);
+        }
         Color clr = batch.getColor();
         float oldA = clr.a;
-        if(lastInstanceDamage < iFrames){
-            if(lastInstanceDamage < 20 || (lastInstanceDamage > 40 && lastInstanceDamage < 60) || (lastInstanceDamage > 80 && lastInstanceDamage < 100)){
-                clr.a = clr.a*0.3f;
+        if(!isDead()){
+            if(lastInstanceDamage < iFrames){
+                if(lastInstanceDamage < 20 || (lastInstanceDamage > 40 && lastInstanceDamage < 60) || (lastInstanceDamage > 80 && lastInstanceDamage < 100)){
+                    clr.a = clr.a*0.3f;
+                }
             }
         }
         batch.setColor(clr);
@@ -268,5 +295,69 @@ public class Player extends LiveEntity{
 
     public void setBulletSpeed(float bulletSpeed) {
         this.bulletSpeed = bulletSpeed;
+    }
+
+    public int getDir() {
+        return dir;
+    }
+
+    public void setDir(int dir) {
+        this.dir = dir;
+    }
+
+    public Animation<TextureRegion> getAnimation() {
+        return animation;
+    }
+
+    public void setAnimation(Animation<TextureRegion> animation) {
+        this.animation = animation;
+    }
+
+    public Texture getSpriteSheet() {
+        return spriteSheet;
+    }
+
+    public void setSpriteSheet(Texture spriteSheet) {
+        this.spriteSheet = spriteSheet;
+    }
+
+    public float getElapsedTime() {
+        return elapsedTime;
+    }
+
+    public void setElapsedTime(float elapsedTime) {
+        this.elapsedTime = elapsedTime;
+    }
+
+    public TextureRegion[] getAnimFrames() {
+        return animFrames;
+    }
+
+    public void setAnimFrames(TextureRegion[] animFrames) {
+        this.animFrames = animFrames;
+    }
+
+    public int getLength() {
+        return length;
+    }
+
+    public void setLength(int length) {
+        this.length = length;
+    }
+
+    public float getFrameTime() {
+        return frameTime;
+    }
+
+    public void setFrameTime(float frameTime) {
+        this.frameTime = frameTime;
+    }
+
+    public boolean isFixX() {
+        return fixX;
+    }
+
+    public void setFixX(boolean fixX) {
+        this.fixX = fixX;
     }
 }

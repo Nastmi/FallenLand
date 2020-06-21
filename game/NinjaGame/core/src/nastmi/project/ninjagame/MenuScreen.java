@@ -44,6 +44,7 @@ public class MenuScreen implements Screen, InputProcessor {
         Sounds.menuTheme.play();
         Sounds.menuTheme.setVolume(Globals.musicVolume);
         Sounds.menuTheme.setLooping(true);
+        Globals.currentLevel = 1;
     }
 
     @Override
@@ -116,7 +117,7 @@ public class MenuScreen implements Screen, InputProcessor {
         Vector3 mousePos = new Vector3(screenX,screenY,0);
         viewport.unproject(mousePos);
         if(playButton.contains(mousePos.x,mousePos.y)){
-            game.setScreen(new Tutorial(game));
+            game.setScreen(new StoryScreen(game,1));
             dispose();
         }
         else if(optionButton.contains(mousePos.x,mousePos.y)){

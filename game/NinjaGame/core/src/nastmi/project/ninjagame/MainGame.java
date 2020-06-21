@@ -14,7 +14,7 @@ public class MainGame extends Game {
 	@Override
 	public void create () {
         batch = new SpriteBatch();
-        //Globals.setResolution();
+        Globals.setResolution();
         this.setScreen(new MenuScreen(this));
 	}
 

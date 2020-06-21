@@ -17,6 +17,7 @@ import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
@@ -52,6 +53,13 @@ public class GameScreen implements Screen, InputProcessor {
     Sound enemyDeath;
     private boolean paused = false;
     Texture pauseMenu;
+    private Rectangle menuButton;
+    private Rectangle resumeButton;
+    private Rectangle healthBar;
+    private Texture healthContainer;
+    private Rectangle end;
+    private boolean gMode;
+
 
     public GameScreen(final MainGame game){
         Sounds.levelTheme.play();
@@ -70,27 +78,33 @@ public class GameScreen implements Screen, InputProcessor {
         camera.position.set(viewport.getWorldWidth()/2 ,viewport.getWorldHeight()/2,0);
         Gdx.input.setInputProcessor(this);
         //Load and render map
-        map = new TmxMapLoader().load("tiledMaps/maps/level1.tmx");
+        map = new TmxMapLoader().load("tiledMaps/maps/level"+Globals.currentLevel+".tmx");
         renderer = new ObjectLayerRenderer(map,1/32f);
         prop = map.getProperties();
         GAME_WORLD_WIDTH = prop.get("width",Integer.class);
         GAME_WORLD_HEIGHT = prop.get("height",Integer.class);
         //Create a world and build it's collisions.
         CollisionBuilder.objectLayerToBox2D(map,arrOfCollisions,1/32f);
-        MapLayer temp = map.getLayers().get("otherLayer");
-        MapObjects tempO = temp.getObjects();
-        RectangleMapObject o = (RectangleMapObject) tempO.get(0);
-        player = new Player(o.getRectangle().getX()*1/32f,o.getRectangle().getY()*1/32f,0.75f,1f,2.5f,20,new Sprite(new Texture("enemy.png")),new Texture(Gdx.files.internal("player/charIdle.png")),2,0.2f);
+        buildOtherLayer();
         renderShape = new ShapeRenderer();
         enemyObjects = EnemySpawner.addEnemies(map);
         pauseMenu = new Texture(Gdx.files.internal("menus/pauseMenu.png"));
+        menuButton = new Rectangle(camera.position.x,camera.position.y,3.4f,1);
+        resumeButton = new Rectangle(camera.position.x,camera.position.y,3.4f,1);
+        healthBar = new Rectangle(camera.position.x-5.5f,camera.position.y+3.5f,2,0.35f);
+        healthContainer = new Texture(Gdx.files.internal("buttonValues/hBar.png"));
     }
+
 
 
     @Override
     public void render(float delta) {
         camera.update();
         float dt = Math.min(Gdx.graphics.getDeltaTime(), 1 / 60f);
+        menuButton.setPosition(camera.position.x-1.61f,camera.position.y+0.5f);
+        resumeButton.setPosition(camera.position.x-1.65f,camera.position.y-1.24f);
+        healthBar.setPosition(camera.position.x-5.5f,camera.position.y+3.5f);
+        healthBar.setWidth(player.getHealth()/10.0f);
         if(!paused){
             changeSpeed();
             cameraFollow();
@@ -99,17 +113,21 @@ public class GameScreen implements Screen, InputProcessor {
             player.frameUp();
             player.setDir(rightPressed,leftPressed,upPressed,downPressed);
             player.createAnimation();
-            CollisionListener.checkForDamage(friendlyBullets,enemyBullets,arrEnemies,player);
+            CollisionListener.checkForDamage(friendlyBullets,enemyBullets,arrEnemies,player,gMode);
             removeDeadEnemies();
             EnemySpawner.spawnEnemies(enemyObjects,arrEnemies,player,1/32f);
-            if(player.isDead()){
-                Sounds.playerDeath.play(Globals.soundVolume);
+        }
+        if(player.isDead()){
+            player.createAnimation();
+            System.out.println(player.getElapsedTime());
+            if(player.getAnimation().isAnimationFinished(player.getElapsedTime())){
                 game.setScreen(new GameScreen(game));
                 dispose();
             }
         }
         renderer.setView(camera);
         renderer.render();
+        healthRender(healthBar);
         game.batch.begin();
         game.batch.setProjectionMatrix(camera.combined);
         drawAll(game.batch);
@@ -118,7 +136,8 @@ public class GameScreen implements Screen, InputProcessor {
             game.batch.draw(pauseMenu,camera.position.x-2f,camera.position.y-2f,4f,4f);
         }
         game.batch.end();
-       // debugRender(arrOfCollisions,renderShape,camera,player.getRect(),test.getRect(),third.getRect());
+        //testRender(menuButton,resumeButton);
+        //debugRender(arrOfCollisions,renderShape,camera,player.getRect(),test.getRect(),third.getRect());
     }
 
 
@@ -130,6 +149,21 @@ public class GameScreen implements Screen, InputProcessor {
             Bullet[] temp2 = e.shoot();
             if(temp2 != null){
                 enemyBullets.addAll(temp2);
+            }
+        }
+    }
+
+    private void buildOtherLayer(){
+        MapLayer temp = map.getLayers().get("otherLayer");
+        MapObjects tempO = temp.getObjects();
+        for(MapObject o:tempO){
+            RectangleMapObject obj = (RectangleMapObject)o;
+            if(obj.getProperties().get("function").equals("spawn")){
+                player = new Player(obj.getRectangle().getX()*1/32f,obj.getRectangle().getY()*1/32f,0.75f,1f,2.5f,20,new Sprite(new Texture("enemy.png")),new Texture(Gdx.files.internal("player/charIdle.png")),2,0.2f);
+                player.setCurrentSpeedY(0);
+            }
+            else if(obj.getProperties().get("function").equals("end")){
+                end = new Rectangle(obj.getRectangle().getX()*1/32f,obj.getRectangle().getY()*1/32f,obj.getRectangle().getWidth()*1/32f,obj.getRectangle().getHeight()*1/32f);
             }
         }
     }
@@ -153,7 +187,7 @@ public class GameScreen implements Screen, InputProcessor {
             e.moveX(dt);
         }
         Array<Bullet> temp = new Array<>(friendlyBullets);
-        CollisionListener.checkCollision(player,arrOfCollisions,"x",arrEnemies,friendlyBullets,enemyBullets);
+        CollisionListener.checkCollision(player,arrOfCollisions,"x",arrEnemies,friendlyBullets,enemyBullets,end,game,gMode);
         player.moveY(dt);
         for(Enemy e:arrEnemies){
             e.moveY(dt);
@@ -167,8 +201,9 @@ public class GameScreen implements Screen, InputProcessor {
             b.moveX(dt);
             b.moveY(dt);
         }
-        CollisionListener.checkCollision(player,arrOfCollisions,"y",arrEnemies,friendlyBullets,enemyBullets);
+        CollisionListener.checkCollision(player,arrOfCollisions,"y",arrEnemies,friendlyBullets,enemyBullets,end,game,gMode);
     }
+
 
 
     public void drawAll(SpriteBatch batch){
@@ -182,6 +217,7 @@ public class GameScreen implements Screen, InputProcessor {
         for(Bullet b:enemyBullets){
             b.draw(batch);
         }
+        batch.draw(healthContainer,healthBar.x,healthBar.y,2,0.35f);
     }
 
     private void changeSpeed(){
@@ -228,6 +264,26 @@ public class GameScreen implements Screen, InputProcessor {
             renderShape.end();
         }
 
+    }
+
+    public void testRender(Rectangle ... arrRect){
+        for(Rectangle r:arrRect){
+            renderShape.setProjectionMatrix(camera.combined);
+            renderShape.begin(ShapeRenderer.ShapeType.Line);
+            renderShape.setColor(Color.BLUE);
+            renderShape.rect(r.getX(),r.getY(),r.getWidth(),r.getHeight());
+            renderShape.end();
+        }
+    }
+
+    public void healthRender(Rectangle ... arrRect){
+        for(Rectangle r:arrRect){
+            renderShape.setProjectionMatrix(camera.combined);
+            renderShape.begin(ShapeRenderer.ShapeType.Filled);
+            renderShape.setColor(Color.RED);
+            renderShape.rect(r.getX(),r.getY(),r.getWidth(),r.getHeight());
+            renderShape.end();
+        }
     }
 
     @Override
@@ -288,6 +344,21 @@ public class GameScreen implements Screen, InputProcessor {
         if(keycode == Input.Keys.ESCAPE){
             paused = !paused;
         }
+        if(keycode == Input.Keys.NUM_1){
+            Globals.currentLevel = 1;
+            game.setScreen(new GameScreen(game));
+        }
+        if(keycode == Input.Keys.NUM_2){
+            Globals.currentLevel = 2;
+            game.setScreen(new GameScreen(game));
+        }
+        if(keycode == Input.Keys.NUM_3){
+            Globals.currentLevel = 3;
+            game.setScreen(new GameScreen(game));
+        }
+        if(keycode == Input.Keys.G){
+            gMode = !gMode;
+        }
         return false;
     }
 
@@ -324,6 +395,18 @@ public class GameScreen implements Screen, InputProcessor {
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+        Vector3 mousePos = new Vector3(screenX,screenY,0);
+        viewport.unproject(mousePos);
+        if(paused){
+            if(menuButton.contains(mousePos.x,mousePos.y)){
+                game.setScreen(new MenuScreen(game));
+                Sounds.levelTheme.stop();
+                dispose();
+            }
+            if(resumeButton.contains(mousePos.x,mousePos.y)){
+                paused = !paused;
+            }
+        }
         return false;
     }
 

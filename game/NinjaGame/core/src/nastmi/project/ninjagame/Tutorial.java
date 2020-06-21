@@ -29,7 +29,7 @@ public class Tutorial implements Screen, InputProcessor {
         this.game = game;
         Gdx.input.setInputProcessor(this);
         camera = new OrthographicCamera();
-        viewport = new FitViewport(144,81,camera);
+        viewport = new FitViewport(192,108,camera);
         viewport.apply();
         camera.position.set(viewport.getWorldWidth()/2 ,viewport.getWorldHeight()/2,0);
         menu = new Texture(Gdx.files.internal("menus/tutorial.png"));
@@ -41,7 +41,7 @@ public class Tutorial implements Screen, InputProcessor {
         camera.update();
         game.batch.begin();
         game.batch.setProjectionMatrix(camera.combined);
-        game.batch.draw(menu,0,0,144,81);
+        game.batch.draw(menu,0,0,192,108);
         game.batch.end();
     }
 

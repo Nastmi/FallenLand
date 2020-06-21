@@ -15,7 +15,7 @@ public class WallShootEnemy extends Enemy {
 
     public WallShootEnemy(float x, float y, float width, float height, float speed, int health, Sprite startSprite, Texture spriteSheet, int length, float frameTime, int shootFrames) {
         super(x, y, width, height, speed, health, startSprite, spriteSheet, length, frameTime);
-        shootFrames = 180;
+        this.shootFrames = shootFrames;
         currentShootFrames = 0;
         this.shootFrames = shootFrames;
     }

@@ -13,6 +13,7 @@ public class Globals {
     public static float musicVolume = 0.4f;
     public static String resolution = "900p";
     public static boolean fullscreen = false;
+    public static int currentLevel;
 
 
 

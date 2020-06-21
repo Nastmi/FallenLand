@@ -1,159 +1,222 @@
 
 factorySheet.png
-size: 1024,64
+size: 256,256
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
 ceilingBoth
   rotate: false
-  xy: 274, 2
+  xy: 138, 206
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 ceilingBottom
   rotate: false
-  xy: 104, 2
+  xy: 36, 172
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 ceilingLeft
   rotate: false
-  xy: 410, 2
+  xy: 104, 138
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 ceilingRight
   rotate: false
-  xy: 308, 2
+  xy: 2, 36
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+empty
+  rotate: false
+  xy: 2, 104
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 factoryBackground
   rotate: false
-  xy: 172, 2
+  xy: 2, 70
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 floorBasic
   rotate: false
-  xy: 36, 2
+  xy: 2, 172
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 floorEmpty
   rotate: false
-  xy: 376, 2
+  xy: 70, 104
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-floorEmptyPattern
-  rotate: false
-  xy: 546, 2
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: -1
-floorGrate
-  rotate: false
-  xy: 206, 2
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: -1
-floorSpill
+floorEmptyBottom
   rotate: false
   xy: 2, 2
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
+floorEmptyBottomLeftCon
+  rotate: false
+  xy: 70, 70
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+floorEmptyBottomRightCon
+  rotate: false
+  xy: 36, 138
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+floorEmptyLeft
+  rotate: false
+  xy: 70, 206
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+floorEmptyLeftCon
+  rotate: false
+  xy: 36, 104
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+floorEmptyPattern
+  rotate: false
+  xy: 70, 36
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+floorEmptyRight
+  rotate: false
+  xy: 104, 104
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+floorEmptyRightCon
+  rotate: false
+  xy: 2, 138
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+floorEmptyTop
+  rotate: false
+  xy: 172, 172
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+floorGrate
+  rotate: false
+  xy: 70, 138
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+floorSpill
+  rotate: false
+  xy: 2, 206
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
 pillarConnected
   rotate: false
-  xy: 716, 2
+  xy: 104, 70
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 pillarConnectedBoth
   rotate: false
-  xy: 342, 2
+  xy: 36, 70
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 pillarConnectedRight
   rotate: false
-  xy: 240, 2
+  xy: 104, 172
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 pillarConnectorBottomBoth
   rotate: false
-  xy: 444, 2
+  xy: 138, 172
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 pillarConnectorBottomLeft
   rotate: false
-  xy: 614, 2
+  xy: 206, 206
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 pillarConnectorBottomRight
   rotate: false
-  xy: 512, 2
+  xy: 36, 36
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 pillarConnectorTopBoth
   rotate: false
-  xy: 580, 2
+  xy: 138, 138
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 pillarConnectorTopLeft
   rotate: false
-  xy: 648, 2
+  xy: 36, 2
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 pillarConnectorTopRight
   rotate: false
-  xy: 478, 2
+  xy: 172, 206
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 pillarSide
   rotate: false
-  xy: 70, 2
+  xy: 36, 206
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 pillarSideBoth
   rotate: false
-  xy: 138, 2
+  xy: 70, 172
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 pillarSideRight
   rotate: false
-  xy: 682, 2
+  xy: 104, 206
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
